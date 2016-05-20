@@ -1,0 +1,74 @@
+objs_JN5164_ToCoStick/LcdExtras.o:  \
+ /cygdrive/c/TWESDK/TWESDK/Wks_ToCoNet/Monitor2/Common/Source/LcdExtras.c \
+  /cygdrive/c/TWESDK/TWESDK/Wks_ToCoNet/Monitor2/Common/Source/LcdDriver.h \
+  /cygdrive/c/TWESDK/TWESDK/516x/Components/Common/Include/jendefs.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/include/stdarg.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/stdio.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/_ansi.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/newlib.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/config.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/machine/ieeefp.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/include/stddef.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/reent.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/_ansi.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/_types.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/lock.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/types.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/machine/_types.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/include/limits.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/machine/types.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/features.h \
+  /cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/stdio.h \
+  /cygdrive/c/TWESDK/TWESDK/Wks_ToCoNet/Monitor2/Common/Source/LcdFont.h \
+  /cygdrive/c/TWESDK/TWESDK/516x/Components/HardwareApi/Include/AppHardwareApi.h \
+  /cygdrive/c/TWESDK/TWESDK/516x/Components/HardwareApi/Include/AppHardwareApi_JN5164.h \
+  /cygdrive/c/TWESDK/TWESDK/516x/Components/HardwareApi/Include/AppHardwareApi_JN516x.h \
+  /cygdrive/c/TWESDK/TWESDK/516x/Components/Common/Include/jendefs.h
+
+/cygdrive/c/TWESDK/TWESDK/Wks_ToCoNet/Monitor2/Common/Source/LcdDriver.h:
+
+/cygdrive/c/TWESDK/TWESDK/516x/Components/Common/Include/jendefs.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/include/stdarg.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/stdio.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/_ansi.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/newlib.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/config.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/machine/ieeefp.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/include/stddef.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/reent.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/_ansi.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/_types.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/lock.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/types.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/machine/_types.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/include/limits.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/machine/types.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/features.h:
+
+/cygdrive/c/TWESDK/TWESDK/Tools/ba-elf-ba2/bin/../lib/gcc/ba-elf/4.1.2/../../../../ba-elf/include/sys/stdio.h:
+
+/cygdrive/c/TWESDK/TWESDK/Wks_ToCoNet/Monitor2/Common/Source/LcdFont.h:
+
+/cygdrive/c/TWESDK/TWESDK/516x/Components/HardwareApi/Include/AppHardwareApi.h:
+
+/cygdrive/c/TWESDK/TWESDK/516x/Components/HardwareApi/Include/AppHardwareApi_JN5164.h:
+
+/cygdrive/c/TWESDK/TWESDK/516x/Components/HardwareApi/Include/AppHardwareApi_JN516x.h:
+
+/cygdrive/c/TWESDK/TWESDK/516x/Components/Common/Include/jendefs.h:
