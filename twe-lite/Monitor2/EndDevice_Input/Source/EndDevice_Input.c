@@ -55,6 +55,7 @@ static void vInitADC();
 static void vSerialInit();
 void vSerInitMessage();
 void vProcessSerialCmd(tsSerCmd_Context *pCmd);
+static void vInitTimer();
 
 // Local data used by the tag during operation
 tsAppData_Ed sAppData;
@@ -68,6 +69,9 @@ uint8 u8PowerUp; // 0x01:from Deep
 void *pvProcessEv1, *pvProcessEv2;
 void (*pf_cbProcessSerialCmd)(tsSerCmd_Context *);
 
+static tsTimerContext timer0;
+static int sum = 0;
+static bool_t isEco=TRUE;
 /**
  * 始動時の処理
  */
@@ -557,6 +561,11 @@ void cbToCoNet_vNwkEvent(teEvent eEvent, uint32 u32arg) {
  * ハードウェアイベント処理（割り込み遅延実行）
  */
 void cbToCoNet_vHwEvent(uint32 u32DeviceId, uint32 u32ItemBitmap) {
+	if(u32DeviceId == E_AHI_DEVICE_TIMER0)  //  TIMER0で割り込まれたら
+	    {
+	        sum++;
+	    }
+
 	if (psCbHandler && psCbHandler->pf_cbToCoNet_vHwEvent) {
 		(*psCbHandler->pf_cbToCoNet_vHwEvent)(u32DeviceId, u32ItemBitmap);
 	}
@@ -669,6 +678,7 @@ static void vInitHardware(int f_warm_start) {
 
 	// SMBUS の初期化
 	vSMBusInit();
+	vInitTimer();
 }
 
 /** @ingroup MASTER
@@ -714,6 +724,21 @@ static void vSerialInit() {
 
 	sSerStream.bPutChar = SERIAL_bTxChar;
 	sSerStream.u8Device = E_AHI_UART_0;
+}
+
+static void vInitTimer()
+{
+    memset(&timer0, 0, sizeof(tsTimerContext));
+    timer0.u8Device = E_AHI_DEVICE_TIMER0; // timer0使用
+
+    timer0.u16Hz = 1000;        // 1000Hz
+    timer0.u8PreScale = 1;      // プリスケーラ1/2
+    timer0.bDisableInt = FALSE; // 割り込み禁止
+
+
+    vTimerConfig(&timer0); // タイマ設定書き込み
+    vTimerStart(&timer0);  // タイマスタート
+
 }
 
 /**
@@ -763,6 +788,7 @@ void vProcessSerialCmd(tsSerCmd_Context *pCmd) {
  * @param u8Length データ長
  * @return 送信成功であれば TRUE
  */
+
 bool_t bSendMessage( uint8* pu8Data, uint8 u8Length ){
 	bool_t	bOk = TRUE;
 
@@ -815,13 +841,30 @@ bool_t bSendMessage( uint8* pu8Data, uint8 u8Length ){
 	sTx.u8Retry = sAppData.u8Retry;
 
 	//	送信処理
-	bOk = ToCoNet_Nwk_bTx(sAppData.pContextNwk, &sTx);
+	bOk = FALSE;
+	/*vfPrintf(&sSerStream,"<<%d>>",u32TickCount_ms);*/
+	if((u32TickCount_ms/120)%2==0){
+		isEco = TRUE;
+	}else{
+		isEco = FALSE;
+	}
+	vfPrintf(&sSerStream,"<<%d||%d>>",u32TickCount_ms & 0xFFFF,sum);
+	if(!isEco){
+		bOk = ToCoNet_Nwk_bTx(sAppData.pContextNwk, &sTx);
+		if ( bOk ) {
+			ToCoNet_Tx_vProcessQueue(); // 送信処理をタイマーを待たずに実行する
+			V_PRINTF(LB"TxOk");
+		} else {
+			V_PRINTF(LB"TxFl");
+		}
+	}
+	/*bOk = ToCoNet_Nwk_bTx(sAppData.pContextNwk, &sTx);
 	if ( bOk ) {
 		ToCoNet_Tx_vProcessQueue(); // 送信処理をタイマーを待たずに実行する
 		V_PRINTF(LB"TxOk");
 	} else {
 		V_PRINTF(LB"TxFl");
-	}
+	}*/
 	return bOk;
 }
 
