@@ -1,4 +1,4 @@
-詳細は以下のリンクより「無線タグ」に記載します。
+﻿できた
 http://tocos-wireless.com/jp/products/TWE-ZERO/index.html
 
 ＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝
