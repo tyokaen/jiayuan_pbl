@@ -70,6 +70,7 @@ public class TestActivity extends Activity {
     FTDriver mSerial;
     Handler mHandler = new Handler();
     Handler sHandler = new Handler();
+    Handler tHandler = new Handler();
     private String mText0, mText1, mText2, mText3;
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
     private static final String ACTION_USB_PERMISSION =
@@ -238,10 +239,9 @@ public class TestActivity extends Activity {
             int i, len;
 
 
-            // [FTDriver] Create Read Buffer
             byte[] rbuf = new byte[4096]; // 1byte <--slow-- [Transfer Speed] --fast--> 4096 byte
             while (true) {
-
+                len = 0;//
                 for (;;) {
 
                     // [FTDriver] Read from USB serial
@@ -249,6 +249,28 @@ public class TestActivity extends Activity {
                     rbuf[len] = 0;
                     String str1 = new String(rbuf);
                     d=0;
+
+                    if(len < 8 && len > 0 ) {
+                        tHandler.post(new Runnable() {
+                            public void run() {
+
+                                mY0.setText("生存信号");
+                                //mY.setText(mText1);
+                                //mY2.setText(mText2);
+                                //mY3.setText(mText3);
+                                // mLoop = false;
+                                // mHandler.postDelayed(this, 100);
+
+                            }
+
+                        });
+                        try {
+                            Thread.sleep(500);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
+                    }else
 
                     if (len > 72) {
 
