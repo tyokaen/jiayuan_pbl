@@ -12,6 +12,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import java.util.Arrays;
 import java.util.Timer;
 import java.util.TimerTask;
 import android.graphics.Color;
@@ -30,14 +32,20 @@ import jp.ksksue.driver.serial.FTDriver;
 public class TestActivity extends Activity {
 
     TextView mX,mY0,mY, mY2, mY3;
-    int d;
+    int i,d,j=0,flag=0,youso=0;
     FTDriver mSerial;
     Handler mHandler = new Handler();
     Handler sHandler = new Handler();
     Handler tHandler = new Handler();
 //    Handler pHandler = new Handler();
-    private  Handler myHandler;
-    public int currentTime;
+
+    String str_alive="alive";
+    String str_live="live";
+    String str_1="1";
+    String str1;
+
+    private  Handler myHandler,myyHandler;
+    public double currentTime=0.0,lastTime=0.0,xTime = 0.0;
 
     private String mText0, mText1, mText2, mText3;
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
@@ -103,9 +111,12 @@ public class TestActivity extends Activity {
         stop = (Button) findViewById(R.id.button2);
 ///////////////////////////////////////////////////////////////////////////////////////
         myHandler = new Handler();
+        myyHandler = new Handler();
 
         final Timer mTimer = new Timer();
+        final Timer xTimer = new Timer();
         final CountUpTimerTask timerTask = new CountUpTimerTask();
+        final XTimerTask xtimertask = new XTimerTask();
 
         mainLayout = (LinearLayout)findViewById(R.id.mainLayout);///////////////////////
 
@@ -166,12 +177,12 @@ public class TestActivity extends Activity {
         mRenderer.addSeriesRenderer(renderer3);
        // renderer.setDisplayChartValuesDistance(10);
         mRenderer.setChartTitle("加速度変位");
-        mRenderer.setXTitle("カウント数");
+        mRenderer.setXTitle("秒数");
         mRenderer.setYTitle("加速度[G]");
         mRenderer.setAxisTitleTextSize(16);
         mRenderer.setChartTitleTextSize(20);
-        mRenderer.setXLabels(20); // グリット間隔X
-        mRenderer.setYLabels(20); // グリット間隔Y
+        mRenderer.setXLabels(100); // グリット間隔X
+        mRenderer.setYLabels(100); // グリット間隔Y
         mRenderer.setLabelsTextSize(15);
         mRenderer.setLegendTextSize(15);
 
@@ -186,9 +197,9 @@ public class TestActivity extends Activity {
         mRenderer.setShowGrid(true);
         mRenderer.setGridColor(Color.parseColor("#00FFFF"));
         mRenderer.setXAxisMin(0);//x軸最小値
-        mRenderer.setXAxisMax(100); //X最大値
-        mRenderer.setYAxisMin(-5);//Y軸最小値
-        mRenderer.setYAxisMax(5); //Ｙ最大値
+        mRenderer.setXAxisMax(5); //X最大値
+        mRenderer.setYAxisMin(-3);//Y軸最小値
+        mRenderer.setYAxisMax(3); //Ｙ最大値
         //凡例表示
         mRenderer.setShowLegend(true);
         //背景
@@ -212,6 +223,7 @@ public class TestActivity extends Activity {
                 currentTime = 0;
                 if (mSerial.begin(SERIAL_BAUDRATE)) {
                     mTimer.schedule(timerTask,100,1000);
+                    xTimer.schedule(xtimertask, 100, 1000);
                     mainloop();
                     mStop = false;
                     start.setEnabled(false);
@@ -223,6 +235,7 @@ public class TestActivity extends Activity {
         stop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 myHandler.removeCallbacks(timerTask);
+                myyHandler.removeCallbacks(xtimertask);
                 mStop = true;
                 stop.setEnabled(false);
                 start.setEnabled(true);
@@ -244,12 +257,31 @@ public class TestActivity extends Activity {
             myHandler.post(new Runnable() {
                 public void run() {
                     currentTime++;
-
+                    //xTime++;
                 }
             });
         }
     }
-        //表示するグラフの設定
+
+    //時刻計測
+    class XTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            // handlerを使って処理をキューイングする
+            myyHandler.post(new Runnable() {
+                public void run() {
+                    xTime++;
+                }
+            });
+        }
+    }
+
+
+
+
+
+
+    //表示するグラフの設定
         @Override
     protected void onResume() {
         super.onResume();
@@ -259,14 +291,14 @@ public class TestActivity extends Activity {
             mRenderer.setClickEnabled(true);
             mRenderer.setSelectableBuffer(10);
             // スクロール
-             mRenderer.setPanEnabled(true,true);
+             mRenderer.setPanEnabled(true);
             //  mRenderer.setPanLimits(new double[]{0, 5000, -20, 20});
 
             //凡例表示
             mRenderer.setShowLegend(true);
 
             //ズーム許可
-            mRenderer.setZoomEnabled(true,true);
+            mRenderer.setZoomEnabled(true);
             // mRenderer.setZoomRate(1000);
             // mRenderer.setZoomLimits(new double[]{0, 5000, -20, 20});
             layout.addView(mChartView, new LayoutParams(LayoutParams.FILL_PARENT,
@@ -288,16 +320,22 @@ public class TestActivity extends Activity {
         @Override
         public void run() {
             int i, len;
-            byte[] rbuf = new byte[4096]; // 1byte <--slow-- [Transfer Speed] --fast--> 4096 byte
+
             while (true) {
-                len = 0;
+
+
                 for (;;) {
+                    byte[] rbuf = new byte[4096]; // 1byte <--slow-- [Transfer Speed] --fast--> 4096 byte
                     len = mSerial.read(rbuf);
                     rbuf[len] = 0;
-                    String str1 = new String(rbuf);
+                    str1 = new String(rbuf);
                     d=0;
 
-                    if(len < 8 && len > 0 ) {
+                mText1 = str1;
+
+      /*         if(len < 8 && len > 0 ) {
+                        lastTime=currentTime;
+
                         tHandler.post(new Runnable() {
                             public void run() {
                                 mY0.setText("生存信号");
@@ -309,66 +347,113 @@ public class TestActivity extends Activity {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    }else
+                    }else*/
 
-                    if (len > 72) {
+                   // if (len > 72) {
+                       if(len > 0){
                         String[] new_str1 = str1.split(";", 0);
-                        int youso = new_str1.length;
+                        youso = new_str1.length;
+
 
                         //通信中の処理
-                        if (youso >= 16) {
-                            String new_str0a = new_str1[11];
-                            d = Integer.parseInt(new_str0a);
-                            if(d != 1){d=0;}
-
-                            String new_str1a = new_str1[12];
-                            int a = Integer.parseInt(new_str1a);
-                            double g_str1 = 0, doublecount = a;
-                            g_str1 = doublecount / 100;
-
-                            String new_str2a = new_str1[13];
-                            int b = Integer.parseInt(new_str2a);
-                            double g_str2 = 0, doublecount2 = b;
-                            g_str2 = doublecount2 / 100;
+                       // if (youso >= 16) {
+                         if(youso >=1) {
+                            flag=0;
+                             for (i = 0; i < youso; i++) {
+                                 if (str_alive.equals(new_str1[i]) || str_live.equals(new_str1[i])) {
+                                     lastTime = currentTime;
+                                     flag++;
 
 
-                            String new_str3a = new_str1[14];
-                            int c = Integer.parseInt(new_str3a);
-                            double g_str3 = 0, doublecount3 = c;
-                            g_str3 = doublecount3 / 100;
+                                     tHandler.post(new Runnable() {
+                                         public void run() {
+                                             mY0.setText("生存信号を受信しました");
+                                         }
 
-                            for (i = 0; i < len; ++i) {
-                                    if (a > -10000 && a < 10000) {
-                                        mText1 = String.format("%.2f", g_str1);
-                                    }
-                                    if (b > -10000 && b < 10000) {
-                                        mText2 = String.format("%.2f", g_str2);
-                                    }
-                                    if (c > -10000 && c < 10000) {
-                                        mText3 = String.format("%.2f", g_str3);
-                                    }
+                                     });
+                                     try {
+                                         Thread.sleep(500);
+                                     } catch (Exception e) {
+                                         e.printStackTrace();
+                                     }
 
-                                }
-                            }
+                                 }
+                             }
+                             if(flag == 1){continue;}
+                             do {
+                                 for (i = j; i < youso; i++) {
+                                     if (str_1.equals(new_str1[i])) {
+                                         j =i;
+                                         break;
+                                     }
+                                 }
 
-                        }
+                                 if ((i + 4) > youso) {
+                                     continue;
+                                 }
+                                 String new_str0a = new_str1[i];
+                                 String new_str1a = new_str1[i + 1];
+                                 String new_str2a = new_str1[i + 2];
+                                 String new_str3a = new_str1[i + 3];
+                                 //  String new_str0a = new_str1[11];
+
+                                 //  String new_str0a = new_str1[0];
+                                 d = Integer.parseInt(new_str0a);
+                                 if (d != 1) { d = 0;}
+
+                                 //  String new_str1a = new_str1[12];
+                                 // String new_str1a = new_str1[1];
+                                 int a = Integer.parseInt(new_str1a);
+                                 double g_str1 = 0, doublecount = a;
+                                 g_str1 = doublecount / 100;
+
+                                 // String new_str2a = new_str1[13];
+                                 //  String new_str2a = new_str1[2];
+                                 int b = Integer.parseInt(new_str2a);
+                                 double g_str2 = 0, doublecount2 = b;
+                                 g_str2 = doublecount2 / 100;
+
+
+                                 // String new_str3a = new_str1[14];
+                                 // String new_str3a = new_str1[3];
+                                 int c = Integer.parseInt(new_str3a);
+                                 double g_str3 = 0, doublecount3 = c;
+                                 g_str3 = doublecount3 / 100;
+
+                                 for (i = 0; i < len; ++i) {
+                                     if (a > -10000 && a < 10000) {
+                                         mText1 = String.format("%.2f", g_str1);
+                                     }
+                                     if (b > -10000 && b < 10000) {
+                                         mText2 = String.format("%.2f", g_str2);
+                                     }
+                                     if (c > -10000 && c < 10000) {
+                                         mText3 = String.format("%.2f", g_str3);
+                                     }
+
+                                 }
+                          //   }while(i+4 <= youso);
+                              //      j=0;
+                     //    }
+
+                     //   }
+
                         if(d == 1) {
+                            lastTime=currentTime;
+
                             mHandler.post(new Runnable() {
                                 public void run() {
-                               /*     pointview++;
-                                    renderer.setDisplayChartValues(false);
-                                    renderer2.setDisplayChartValues(false);
-                                    renderer3.setDisplayChartValues(false);
-                                    mY0.setText(String.valueOf(pointview));
-                                    */
-                                    mY0.setText("通常モード");
-                                     mY.setText(mText1);
-                                    mY2.setText(mText2);
-                                    mY3.setText(mText3);
+
+                                     mY0.setText("通常モード");
+                                    mY.setText(String.valueOf(youso));
+                                     //mY.setText(mText1);
+                                     mY2.setText(mText2);
+                                     mY3.setText(mText3);
 
                                     //表示するデータを取得
                                     try {
-                                        x = currentTime;
+                                        x = xTime;
+                                       // xTime += 0.1;
                                     }catch(NumberFormatException e){
                                         mX.requestFocus();
                                         return;
@@ -393,50 +478,91 @@ public class TestActivity extends Activity {
                                 }
 
                             });
-                            try {
-                                Thread.sleep(500);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
+
                         }
-                        //終了処理
+                                 }while(i+4 <= youso);
+                                 j=0;
+                            }
+
+                           try {
+                               Thread.sleep(150);
+                           } catch (Exception e) {
+                               e.printStackTrace();
+                           }
+
+                  }
+
+
+                                 //終了処理
                         if (mStop) {
                             mRunningMainLoop = false;
                            finish();
 
                     }else {//通信してないときの処理
                         if(d != 1) {
-                          try {
+
+                        /*  try {
                                 Thread.sleep(100);
                             } catch (Exception e) {
                                 e.printStackTrace();
-                            }
+                            }*/
+
+                           if(xTime > 5.0) xTime=0;
 
                             sHandler.post(new Runnable() {
                                public void run() {
                                  //  pointview=0;
-                                  mY0.setText("省電力モード");
-                                    mY.setText("省電力中");
-                                    mY2.setText("省電力中");
-                                    mY3.setText("省電力中");
+                                  if((currentTime -lastTime) > 30){
+                                       mY0.setText("電池が切れた可能性があります");
+                                       mY0.setTextColor(Color.RED);
+                                       mY.setText("");
+                                       mY2.setText("");
+                                       mY3.setText("");
+                                       try {
+                                           Thread.sleep(1000);
+                                       } catch (Exception e) {
+                                           e.printStackTrace();
+                                       }
 
-                                   //表示するデータ
-                                   mCurrentSeries.add(x, y);
-                                   mCurrentSeries2.add(x, y2);
-                                   mCurrentSeries3.add(x, y3);
-                                   //グラフを表示
-                                  mChartView.repaint();
+                                   }
+
+                                   if(xTime == 0.0) {
+                                       //mY0.setText("省電力モード");
+                                       mY0.setText(String.valueOf(currentTime - lastTime));
+                                       // mY.setText("省電力中");
+                                       mY.setText(mText1);
+                                       mY2.setText("省電力中");
+                                       mY3.setText("省電力中");
+                                       // mY.setText(mText1);
+
+
+                                       if (mDataset.getSeries().length > 0) {
+                                           mDataset.getSeriesAt(0).clear();
+                                           mDataset.getSeriesAt(1).clear();
+                                           mDataset.getSeriesAt(2).clear();
+                                       }
+
+                                       //表示するデータ
+                                       mCurrentSeries.add(0, 0);
+                                       mCurrentSeries2.add(0, 0);
+                                       mCurrentSeries3.add(0, 0);
+                                       //グラフを表示
+                                       mChartView.repaint();
+                                   }
                                 }
                             });
                         }
-                        //終了処理
-                        if (mStop) {
-                            mRunningMainLoop = false;
-                            finish();
-                        }
+
+                    }
+                    //終了処理
+                    if (mStop) {
+                        mRunningMainLoop = false;
+                        break;
+
                     }
                 }
-
+                //終了処理
+               finish();
             }
         }
     };
