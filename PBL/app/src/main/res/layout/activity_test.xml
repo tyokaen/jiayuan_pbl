@@ -93,9 +93,9 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="省電力モード"
         android:id="@+id/dValue"
-        android:layout_above="@+id/button2"
-        android:layout_alignParentEnd="true"
-        android:layout_marginEnd="85dp" />
+        android:layout_alignTop="@+id/yValue"
+        android:layout_alignEnd="@+id/mainLayout"
+        android:layout_marginEnd="94dp" />
 
     <LinearLayout
         android:id="@+id/mainLayout"
@@ -115,6 +115,14 @@
             android:layout_gravity="center_horizontal"
             android:id="@+id/chart"></LinearLayout>
     </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:id="@+id/textView3"
+        android:layout_above="@+id/button2"
+        android:layout_alignEnd="@+id/mainLayout" />
 
 
 </RelativeLayout>

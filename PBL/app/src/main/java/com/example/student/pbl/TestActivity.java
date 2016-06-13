@@ -31,8 +31,8 @@ import jp.ksksue.driver.serial.FTDriver;
 
 public class TestActivity extends Activity {
 
-    TextView mX,mY0,mY, mY2, mY3;
-    int i,d,j=0,flag=0,youso=0;
+    TextView mX,mY0,mY, mY2, mY3,mCount;
+    int i,d,j=0,flag=0,youso=0,flag1=0;
     FTDriver mSerial;
     Handler mHandler = new Handler();
     Handler sHandler = new Handler();
@@ -46,7 +46,7 @@ public class TestActivity extends Activity {
 
     private  Handler myHandler,myyHandler;
     public double currentTime=0.0,lastTime=0.0,xTime = 0.0;
-
+    double adjustmenttime=0.0,temptime=0.0,sumtime=0.0;
     private String mText0, mText1, mText2, mText3;
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
     private static final String ACTION_USB_PERMISSION =
@@ -106,6 +106,7 @@ public class TestActivity extends Activity {
         mY = (TextView) findViewById(R.id.xValue);
         mY2 = (TextView) findViewById(R.id.yValue);
         mY3 = (TextView) findViewById(R.id.zValue);
+        mCount = (TextView)findViewById(R.id.textView3);
 
         start = (Button) findViewById(R.id.button1);
         stop = (Button) findViewById(R.id.button2);
@@ -114,9 +115,9 @@ public class TestActivity extends Activity {
         myyHandler = new Handler();
 
         final Timer mTimer = new Timer();
-        final Timer xTimer = new Timer();
+      //  final Timer xTimer = new Timer();
         final CountUpTimerTask timerTask = new CountUpTimerTask();
-        final XTimerTask xtimertask = new XTimerTask();
+       // final XTimerTask xtimertask = new XTimerTask();
 
         mainLayout = (LinearLayout)findViewById(R.id.mainLayout);///////////////////////
 
@@ -181,8 +182,8 @@ public class TestActivity extends Activity {
         mRenderer.setYTitle("加速度[G]");
         mRenderer.setAxisTitleTextSize(16);
         mRenderer.setChartTitleTextSize(20);
-        mRenderer.setXLabels(100); // グリット間隔X
-        mRenderer.setYLabels(100); // グリット間隔Y
+        mRenderer.setXLabels(50); // グリット間隔X
+        mRenderer.setYLabels(50); // グリット間隔Y
         mRenderer.setLabelsTextSize(15);
         mRenderer.setLegendTextSize(15);
 
@@ -198,8 +199,8 @@ public class TestActivity extends Activity {
         mRenderer.setGridColor(Color.parseColor("#00FFFF"));
         mRenderer.setXAxisMin(0);//x軸最小値
         mRenderer.setXAxisMax(5); //X最大値
-        mRenderer.setYAxisMin(-3);//Y軸最小値
-        mRenderer.setYAxisMax(3); //Ｙ最大値
+        mRenderer.setYAxisMin(-1.2);//Y軸最小値
+        mRenderer.setYAxisMax(1.2); //Ｙ最大値
         //凡例表示
         mRenderer.setShowLegend(true);
         //背景
@@ -216,6 +217,7 @@ public class TestActivity extends Activity {
         mY.setText("未取得中");
         mY2.setText("未取得中");
         mY3.setText("未取得中");
+      //  mCount.setText("カウントアップ");
 
 
         start.setOnClickListener(new View.OnClickListener() {
@@ -223,7 +225,7 @@ public class TestActivity extends Activity {
                 currentTime = 0;
                 if (mSerial.begin(SERIAL_BAUDRATE)) {
                     mTimer.schedule(timerTask,100,1000);
-                    xTimer.schedule(xtimertask, 100, 1000);
+                    //xTimer.schedule(xtimertask, 100, 1000);
                     mainloop();
                     mStop = false;
                     start.setEnabled(false);
@@ -235,7 +237,7 @@ public class TestActivity extends Activity {
         stop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 myHandler.removeCallbacks(timerTask);
-                myyHandler.removeCallbacks(xtimertask);
+               // myyHandler.removeCallbacks(xtimertask);
                 mStop = true;
                 stop.setEnabled(false);
                 start.setEnabled(true);
@@ -262,7 +264,7 @@ public class TestActivity extends Activity {
             });
         }
     }
-
+/*
     //時刻計測
     class XTimerTask extends TimerTask {
         @Override
@@ -275,7 +277,7 @@ public class TestActivity extends Activity {
             });
         }
     }
-
+*/
 
 
 
@@ -331,7 +333,7 @@ public class TestActivity extends Activity {
                     str1 = new String(rbuf);
                     d=0;
 
-                mText1 = str1;
+             //   mText1 = str1;
 
       /*         if(len < 8 && len > 0 ) {
                         lastTime=currentTime;
@@ -359,15 +361,17 @@ public class TestActivity extends Activity {
                        // if (youso >= 16) {
                          if(youso >=1) {
                             flag=0;
+                             flag1++;
                              for (i = 0; i < youso; i++) {
                                  if (str_alive.equals(new_str1[i]) || str_live.equals(new_str1[i])) {
                                      lastTime = currentTime;
                                      flag++;
 
 
+
                                      tHandler.post(new Runnable() {
                                          public void run() {
-                                             mY0.setText("生存信号を受信しました");
+                                             mY0.setText("生存信号を受信");
                                          }
 
                                      });
@@ -445,15 +449,16 @@ public class TestActivity extends Activity {
                                 public void run() {
 
                                      mY0.setText("通常モード");
-                                    mY.setText(String.valueOf(youso));
-                                     //mY.setText(mText1);
+                                     mY0.setTextColor(Color.BLACK);
+                                    //mY.setText(String.valueOf(youso));
+                                     mY.setText(mText1);
                                      mY2.setText(mText2);
                                      mY3.setText(mText3);
 
                                     //表示するデータを取得
                                     try {
                                         x = xTime;
-                                       // xTime += 0.1;
+                                       xTime += 0.08;
                                     }catch(NumberFormatException e){
                                         mX.requestFocus();
                                         return;
@@ -506,35 +511,58 @@ public class TestActivity extends Activity {
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }*/
+/*
+                             adjustmenttime = currentTime;
+                             temptime = currentTime - adjustmenttime;
+                             sumtime += temptime;*/
 
-                           if(xTime > 5.0) xTime=0;
+                         //if(flag==1)sumtime+=0.5;
+                           if(flag1 > 0){ sumtime+=0.01;}
+
+                            if(sumtime > 2.0){
+                                xTime=0.0;
+                               // adjustmenttime = 0.0;
+                               // temptime = 0.0;
+                                sumtime = 0.0;
+                                flag1=0;
+
+                            }
+                           //if(xTime > 3.0)xTime=0.0;
+
+
 
                             sHandler.post(new Runnable() {
                                public void run() {
                                  //  pointview=0;
-                                  if((currentTime -lastTime) > 30){
-                                       mY0.setText("電池が切れた可能性があります");
+                                  if((currentTime -lastTime) > 30.0){
+                                       mY0.setText("電池切れ");
                                        mY0.setTextColor(Color.RED);
                                        mY.setText("");
                                        mY2.setText("");
                                        mY3.setText("");
+
+                                   }
+
+
+
+
+                                   if(xTime == 0.0 && (currentTime - lastTime )<30.0) {
+                                      mY0.setText("省電力モード");
+                                       mY0.setTextColor(Color.BLACK);
+                                      mCount.setText(String.valueOf(currentTime - lastTime));
+                                       mY.setText("省電力中");
+                                       //mY.setText(mText1);
+                                       mY2.setText("省電力中");
+                                       mY3.setText("省電力中");
+
+                                       // mY.setText(mText1);
+
+                                        /*
                                        try {
                                            Thread.sleep(1000);
                                        } catch (Exception e) {
                                            e.printStackTrace();
-                                       }
-
-                                   }
-
-                                   if(xTime == 0.0) {
-                                       //mY0.setText("省電力モード");
-                                       mY0.setText(String.valueOf(currentTime - lastTime));
-                                       // mY.setText("省電力中");
-                                       mY.setText(mText1);
-                                       mY2.setText("省電力中");
-                                       mY3.setText("省電力中");
-                                       // mY.setText(mText1);
-
+                                       }*/
 
                                        if (mDataset.getSeries().length > 0) {
                                            mDataset.getSeriesAt(0).clear();
