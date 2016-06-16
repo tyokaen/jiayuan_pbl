@@ -81,7 +81,7 @@ void vSerOutput_SmplTag3(tsRxPktInfo sRxPktInfo, uint8 *p);
 void vSerOutput_Uart(tsRxPktInfo sRxPktInfo, uint8 *p);
 
 void vSerOutput_Secondary();
-
+static void vSerialInit2();
 void vSerInitMessage();
 void vProcessSerialCmd(tsSerCmd_Context *pCmd);
 
@@ -112,6 +112,25 @@ static tsFILE sLcdStream, sLcdStreamBtm;
 
 static uint32 u32sec;
 static uint32 u32TempCount_ms = 0;
+
+static void vSerialInit2() {
+	static uint8 au8SerialTxBuffer[96];
+	static uint8 au8SerialRxBuffer[32];
+
+	sSerPort.pu8SerialRxQueueBuffer = au8SerialRxBuffer;
+	sSerPort.pu8SerialTxQueueBuffer = au8SerialTxBuffer;
+	sSerPort.u32BaudRate = UART_BAUD;
+	sSerPort.u16AHI_UART_RTS_LOW = 0xffff;
+	sSerPort.u16AHI_UART_RTS_HIGH = 0xffff;
+	sSerPort.u16SerialRxQueueSize = sizeof(au8SerialRxBuffer);
+	sSerPort.u16SerialTxQueueSize = sizeof(au8SerialTxBuffer);
+	sSerPort.u8SerialPort = E_AHI_UART_0;
+	sSerPort.u8RX_FIFO_LEVEL = E_AHI_UART_FIFO_LEVEL_1;
+	SERIAL_vInit(&sSerPort);
+
+	sSerStream.bPutChar = SERIAL_bTxChar;
+	sSerStream.u8Device = E_AHI_UART_0;
+}
 
 /****************************************************************************/
 /***        ToCoNet Callback Functions                                    ***/
@@ -376,9 +395,10 @@ static void vInitHardware(int f_warm_start) {
 			sUartOpt.u8WordLen = 8;
 		}
 
-		vSerialInit(u32baud, &sUartOpt);
+		//vSerialInit();
+		vSerialInit2();
 	} else {
-		vSerialInit(u32baud, NULL);
+		vSerialInit2();
 	}
 
 	ToCoNet_vDebugInit(&sSerStream);
@@ -571,16 +591,16 @@ void vSerOutput_Standard(tsRxPktInfo sRxPktInfo, uint8 *p) {
 	/*A_PRINTF("::rc=%08X", sRxPktInfo.u32addr_rcvr);
 
 	// LQI
-	//A_PRINTF(":lq=%d", sRxPktInfo.u8lqi_1st);
+	A_PRINTF(":lq=%d", sRxPktInfo.u8lqi_1st);
 
 	// フレーム
-	//A_PRINTF(":ct=%04X", sRxPktInfo.u16fct);
+	A_PRINTF(":ct=%04X", sRxPktInfo.u16fct);
 
 	// 送信元子機アドレス
-	//A_PRINTF(":ed=%08X:id=%X", sRxPktInfo.u32addr_1st, sRxPktInfo.u8id);*/
+	A_PRINTF(":ed=%08X:id=%X", sRxPktInfo.u32addr_1st, sRxPktInfo.u8id);*/
 
 	switch(sRxPktInfo.u8pkt) {
-	case PKT_ID_BUTTON:
+	/*case PKT_ID_BUTTON:
 		_C {
 			uint8 u8batt = G_OCTET();
 
@@ -787,30 +807,81 @@ void vSerOutput_Standard(tsRxPktInfo sRxPktInfo, uint8 *p) {
 #endif
 		}
 		break;
-
+*/
 	case PKT_ID_ADXL345:
 		_C {
 			uint8 u8batt = G_OCTET();
 
 			uint16 u16adc1 = G_BE_WORD();
 			uint16 u16adc2 = G_BE_WORD();
-			int16 i16x = G_BE_WORD();
-			int16 i16y = G_BE_WORD();
-			int16 i16z = G_BE_WORD();
+			if(u16adc2){
+				vfPrintf(&sSerStream,";alive;");
+			}else{
+				/*int16 xyz_array[30];
+				int i;
+				for(i=0; i<30; i++){
+					xyz_array[i] = G_BE_WORD();
+				}*/
+				int16 i16x = G_BE_WORD();
+				int16 i16y = G_BE_WORD();
+				int16 i16z = G_BE_WORD();
 
-			// センサー情報
-			/*A_PRINTF(":ba=%04d:a1=%04d:a2=%04d:x=%04d:y=%04d:z=%04d" LB,
-					DECODE_VOLT(u8batt), u16adc1, u16adc2, i16x, i16y, i16z );
-			A_PRINTF(";%04d:%04d:%04d;" LB, i16x, i16y, i16z );*/
-			/*uint8 u8batt = G_OCTET();
-					uint16 u16adc1 = G_BE_WORD();
-					uint16 u16adc2 = G_BE_WORD(); (void)u16adc2;
-					int16 i16x = G_BE_WORD();
-					int16 i16y = G_BE_WORD();
-					int16 i16z = G_BE_WORD();*/
-					uint8 u8bitmap = G_OCTET();
-
-					A_PRINTF( ";"
+				// センサー情報
+				/*A_PRINTF(":ba=%04d:a1=%04d:a2=%04d:x=%04d:y=%04d:z=%04d" LB,
+						DECODE_VOLT(u8batt), u16adc1, u16adc2, i16x, i16y, i16z );*/
+				/*uint8 u8batt = G_OCTET();
+						uint16 u16adc1 = G_BE_WORD();
+						uint16 u16adc2 = G_BE_WORD(); (void)u16adc2;
+						int16 i16x = G_BE_WORD();
+						int16 i16y = G_BE_WORD();
+						int16 i16z = G_BE_WORD();*/
+				uint8 u8bitmap = G_OCTET();
+				vfPrintf(&sSerStream,";%d;%04d;%04d;%04d;", 1, i16x, i16y, i16z);
+				/*vfPrintf(&sSerStream,";%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;%04d;",
+					xyz_array[0],
+					xyz_array[1],
+					xyz_array[2],
+					xyz_array[3],
+					xyz_array[4],
+					xyz_array[5],
+					xyz_array[6],
+					xyz_array[7],
+					xyz_array[8],
+					xyz_array[9],
+					xyz_array[10],
+					xyz_array[11],
+					xyz_array[12],
+					xyz_array[13],
+					xyz_array[14],
+					xyz_array[15],
+					xyz_array[16],
+					xyz_array[17],
+					xyz_array[18],
+					xyz_array[19],
+					xyz_array[20],
+					xyz_array[21],
+					xyz_array[22],
+					xyz_array[23],
+					xyz_array[24],
+					xyz_array[25],
+					xyz_array[26],
+					xyz_array[27],
+					xyz_array[28],
+					xyz_array[29],
+					xyz_array[30],
+					xyz_array[31],
+					xyz_array[32],
+					xyz_array[33],
+					xyz_array[34],
+					xyz_array[35],
+					xyz_array[36],
+					xyz_array[37],
+					xyz_array[38],
+					xyz_array[39],
+					xyz_array[40]
+				);*/
+			}
+					/*A_PRINTF( ";"
 						"%d;"			// TIME STAMP
 						"%08X;"			// 受信機のアドレス
 						"%03d;"			// LQI  (0-255)
@@ -840,7 +911,7 @@ void vSerOutput_Standard(tsRxPktInfo sRxPktInfo, uint8 *p) {
 						i16x,
 						i16y,
 						i16z
-					);
+					);*/
 
 #ifdef USE_LCD
 			// LCD への出力
@@ -859,7 +930,7 @@ void vSerOutput_Standard(tsRxPktInfo sRxPktInfo, uint8 *p) {
 		break;
 
 
-	case PKT_ID_ADT7410:
+	/*case PKT_ID_ADT7410:
 		_C {
 			uint8 u8batt = G_OCTET();
 
@@ -1006,7 +1077,7 @@ void vSerOutput_Standard(tsRxPktInfo sRxPktInfo, uint8 *p) {
 			sSerCmdOut.au8data = NULL; // p は関数を抜けると無効であるため、念のため NULL に戻す
 		}
 		break;
-
+*/
 	default:
 		break;
 	}
@@ -1306,9 +1377,14 @@ void vSerOutput_SmplTag3( tsRxPktInfo sRxPktInfo, uint8 *p) {
 		uint8 u8batt = G_OCTET();
 		uint16 u16adc1 = G_BE_WORD();
 		uint16 u16adc2 = G_BE_WORD(); (void)u16adc2;
-		int16 i16x = G_BE_WORD();
+		int16 xyz_array[41];
+		int i;
+		for(i=0; i<40; i++){
+			xyz_array[i] = G_BE_WORD();
+		}
+		/*int16 i16x = G_BE_WORD();
 		int16 i16y = G_BE_WORD();
-		int16 i16z = G_BE_WORD();
+		int16 i16z = G_BE_WORD();*/
 		uint8 u8bitmap = G_OCTET();
 
 		A_PRINTF( ";"
@@ -1924,7 +2000,7 @@ void vSerOutput_Secondary() {
 		} else if (IS_APPCONF_OPT_UART()) {
 			// 無し
 		} else {
-			A_PRINTF("::ts=%d"LB, u32sec);
+			//A_PRINTF("::ts=%d"LB, u32sec);
 		}
 	}
 }

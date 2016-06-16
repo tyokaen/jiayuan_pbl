@@ -72,6 +72,11 @@ void (*pf_cbProcessSerialCmd)(tsSerCmd_Context *);
 static tsTimerContext timer0;
 static int sum = 0;
 static bool_t isEco=TRUE;
+static int start_tickcount=0;
+/*static int throughCount = 0;*/
+extern int16 x_array[165];
+extern int16 y_array[165];
+extern int16 z_array[165];
 /**
  * 始動時の処理
  */
@@ -153,6 +158,8 @@ void cbAppColdStart(bool_t bAfterAhiInit) {
 		// フラッシュメモリからの読み出し
 		//   フラッシュからの読み込みが失敗した場合、ID=15 で設定する
 		sAppData.bFlashLoaded = Config_bLoad(&sAppData.sFlash);
+		sAppData.sFlash.sData.u32Slp = 30UL;
+		sAppData.sFlash.sData.u8mode = 0xA1;
 
 		//	入力ボタンのプルアップを停止する
 		if ((sAppData.sFlash.sData.u8mode == PKT_ID_IO_TIMER)	// ドアタイマー
@@ -562,9 +569,13 @@ void cbToCoNet_vNwkEvent(teEvent eEvent, uint32 u32arg) {
  */
 void cbToCoNet_vHwEvent(uint32 u32DeviceId, uint32 u32ItemBitmap) {
 	if(u32DeviceId == E_AHI_DEVICE_TIMER0)  //  TIMER0で割り込まれたら
-	    {
-	        sum++;
-	    }
+	{
+		sum++;
+		//vfPrintf(&sSerStream, "<<%d:%d>>", sum, start_tickcount);
+			/*if((u32TickCount_ms - start_tickcount) / 120 >= 5){
+				vfPrintf(&sSerStream, "normal");
+			}*/
+	}
 
 	if (psCbHandler && psCbHandler->pf_cbToCoNet_vHwEvent) {
 		(*psCbHandler->pf_cbToCoNet_vHwEvent)(u32DeviceId, u32ItemBitmap);
@@ -842,29 +853,39 @@ bool_t bSendMessage( uint8* pu8Data, uint8 u8Length ){
 
 	//	送信処理
 	bOk = FALSE;
-	/*vfPrintf(&sSerStream,"<<%d>>",u32TickCount_ms);*/
-	if((u32TickCount_ms/120)%2==0){
+	/*if((u32TickCount_ms/120)%2==0){
 		isEco = TRUE;
 	}else{
 		isEco = FALSE;
 	}
-	vfPrintf(&sSerStream,"<<%d||%d>>",u32TickCount_ms & 0xFFFF,sum);
+	if(start_tickcount == 0){
+		start_tickcount = u32TickCount_ms;
+	}
+	else if((u32TickCount_ms - start_tickcount) / 120 >= 5){
+		isEco = FALSE;
+	}
+	if(throughCount < 165){
+		throughCount++;
+	}
+	else{
 	if(!isEco){
 		bOk = ToCoNet_Nwk_bTx(sAppData.pContextNwk, &sTx);
 		if ( bOk ) {
-			ToCoNet_Tx_vProcessQueue(); // 送信処理をタイマーを待たずに実行する
+			//ToCoNet_Tx_vProcessQueue(); // 送信処理をタイマーを待たずに実行する
 			V_PRINTF(LB"TxOk");
 		} else {
 			V_PRINTF(LB"TxFl");
 		}
-	}
-	/*bOk = ToCoNet_Nwk_bTx(sAppData.pContextNwk, &sTx);
+		isEco = TRUE;
+		throughCount = 0;
+	}*/
+	bOk = ToCoNet_Nwk_bTx(sAppData.pContextNwk, &sTx);
 	if ( bOk ) {
 		ToCoNet_Tx_vProcessQueue(); // 送信処理をタイマーを待たずに実行する
 		V_PRINTF(LB"TxOk");
 	} else {
 		V_PRINTF(LB"TxFl");
-	}*/
+	}
 	return bOk;
 }
 

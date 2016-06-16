@@ -37,6 +37,13 @@ static uint8 u8sns_cmplt = 0;
 static tsSnsObj sSnsObj;
 static tsObjData_ADXL345 sObjADXL345;
 
+static bool_t thre=TRUE;
+static int throughCount = 0;
+static int roopCount = 0;
+int16 xyz_array[492];
+/*int16 y_array[165];
+int16 z_array[165];*/
+
 enum {
 	E_SNS_ADC_CMP_MASK = 1,
 	E_SNS_ADXL345_CMP = 2,
@@ -134,26 +141,121 @@ PRSEV_HANDLER_DEF(E_STATE_APP_WAIT_TX, tsEvent *pEv, teEvent eEvent, uint32 u32e
 			ToCoNet_Nwk_bResume(sAppData.pContextNwk);
 		}
 
+		roopCount++;
 		uint8	au8Data[12];
 		uint8*	q = au8Data;
 		S_OCTET(sAppData.sSns.u8Batt);
 		S_BE_WORD(sAppData.sSns.u16Adc1);
-		S_BE_WORD(sAppData.sSns.u16Adc2);
-		S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X]);
+		//S_BE_WORD(sAppData.sSns.u16Adc2);
+		/*S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X]);
 		S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y]);
 		S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]);
 		S_OCTET( 0xFE );
+		int j;
+				for(j=1; j<165; j++){
+					vWait();*/
+					/*uint32 tickCount = u32TickCount_ms;
+					while(u32TickCount_ms - tickCount < 30){
 
-		if ( bSendMessage( au8Data, q-au8Data ) ) {
-		} else {
-			ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
+					}
+
+					vfPrintf(&sSerStream,"sleep");
+					x_array[j] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
+					y_array[j] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
+					z_array[j] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];
+				}
+				int i;
+				for(i=0; i<40; i++){
+					S_BE_WORD(x_array[i]);
+				}
+
+				S_OCTET( 0xFE );
+				if(bSendMessage( au8Data, q-au8Data )){
+
+				}else{
+					ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
+				}*/
+		if(thre){
+			int16 ex_x = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
+			int16 ex_y = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
+			int16 ex_z = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];
+			if(ex_x + ex_y + ex_z > 105){
+				/*xyz_array[3*throughCount] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
+				xyz_array[3*throughCount+1] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
+				xyz_array[3*throughCount+2] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];*/
+				throughCount++;
+				thre = FALSE;
+				S_BE_WORD(0);
+				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X]);
+				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y]);
+				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]);
+				S_OCTET( 0xFE );
+				if(bSendMessage( au8Data, q-au8Data )){
+				}else{
+					ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
+				}
+			}
+		}else if(throughCount > 300){
+			throughCount = 0;
+			thre = TRUE;
+		}else if(throughCount > 0){
+			/*if(throughCount < 165){
+			xyz_array[3*throughCount] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
+			xyz_array[3*throughCount+1] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
+			xyz_array[3*throughCount+2] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];*/
+			throughCount++;
+			/*}
+			if (throughCount % 30 == 0 && throughCount <= 164) {
+				S_BE_WORD(0);
+				int i;
+				int n = (throughCount-1) / 30;
+				for(i=0; i<30; i++){
+					S_BE_WORD(xyz_array[30 * n + i]);
+
+				}
+				/*for(i=0; i<165; i++){
+					S_BE_WORD(y_array[i]);
+				}
+				for(i=0; i<165; i++){
+					S_BE_WORD(z_array[i]);
+				}*/
+				/*S_BE_WORD(x_array[0]);
+				S_BE_WORD(x_array[50]);
+				S_BE_WORD(x_array[100]);*/
+				S_BE_WORD(0);
+				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X]);
+				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y]);
+				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]);
+				S_OCTET( 0xFE );
+				if(bSendMessage( au8Data, q-au8Data )){
+
+				}else{
+					ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
+				}
+				/*throughCount = 0;
+				thre = TRUE;*/
+			//}
+			/*if(throughCount > 164){
+				throughCount = 0;
+				thre = TRUE;
+			}*/
 		}
 
+		if (roopCount % 100 == 0) {
+			S_BE_WORD(1);
+			S_OCTET( 0xFE );
+			 if(bSendMessage( au8Data, q-au8Data )){
+			 }else {
+				ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
+			}
+		}
+/*
 #ifdef LITE2525A
 		vPortSetHi(LED);
 #else
 		vPortSetLo(LED);
 #endif
+*/
 		V_PRINTF(" FR=%04X", sAppData.u16frame_count);
 	}
 
