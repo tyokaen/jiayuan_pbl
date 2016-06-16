@@ -217,7 +217,7 @@ void cbAppColdStart(bool_t bAfterAhiInit) {
 		}
 #endif
 
-		if (sAppData.bConfigMode) {
+		/*if (sAppData.bConfigMode) {
 			// 設定モードで起動
 
 			// 設定用のコンフィグ
@@ -386,7 +386,7 @@ void cbAppColdStart(bool_t bAfterAhiInit) {
 
 			// イベント処理の初期化
 			vInitAppADXL345();
-		} else
+		} else*/
 		// ADXL345
 		if ( sAppData.sFlash.sData.u8mode == PKT_ID_ADXL345_LOWENERGY ) {
 			sToCoNet_AppContext.bSkipBootCalib = FALSE; // 起動時のキャリブレーションを行う
@@ -400,9 +400,9 @@ void cbAppColdStart(bool_t bAfterAhiInit) {
 
 			// イベント処理の初期化
 			vInitAppADXL345_LowEnergy();
-		} else
+		} //else
 		// TSL2561
-		if ( sAppData.sFlash.sData.u8mode == PKT_ID_TSL2561 ) {
+		/*if ( sAppData.sFlash.sData.u8mode == PKT_ID_TSL2561 ) {
 				sToCoNet_AppContext.bSkipBootCalib = FALSE; // 起動時のキャリブレーションを行う
 				sToCoNet_AppContext.u8MacInitPending = TRUE; // 起動時の MAC 初期化を省略する(送信する時に初期化する)
 
@@ -437,7 +437,7 @@ void cbAppColdStart(bool_t bAfterAhiInit) {
 #endif // CNFMST
 	    {
 			;
-		} // 終端の else 節
+		} // 終端の else 節*/
 
 		// イベント処理関数の登録
 		if (pvProcessEv1) {
