@@ -176,13 +176,16 @@ PRSEV_HANDLER_DEF(E_STATE_APP_WAIT_TX, tsEvent *pEv, teEvent eEvent, uint32 u32e
 					ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
 				}*/
 		if(thre){
-			int16 ex_x = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
+			/*int16 ex_x = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
 			int16 ex_y = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
-			int16 ex_z = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];
-			if(ex_x + ex_y + ex_z > 105){
+			int16 ex_z = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];*/
+
+			if(sqrt((double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]) > 94.4){
 				/*xyz_array[3*throughCount] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
 				xyz_array[3*throughCount+1] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
 				xyz_array[3*throughCount+2] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];*/
+				//double xyz = sqrt((double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]);
+
 				throughCount++;
 				thre = FALSE;
 				S_BE_WORD(0);
