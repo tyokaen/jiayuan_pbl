@@ -1,8 +1,0 @@
-<resources>
-    <string name="app_name">Musenn</string>
-    <string name="title_activity_test">TestActivity</string>
-
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_my_timer_task">MyTimerTask</string>
-</resources>
