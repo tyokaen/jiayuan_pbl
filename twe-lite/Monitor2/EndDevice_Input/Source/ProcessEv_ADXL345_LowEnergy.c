@@ -40,6 +40,7 @@ static tsObjData_ADXL345 sObjADXL345;
 static bool_t thre=TRUE;
 static int throughCount = 0;
 static int roopCount = 0;
+uint32 thre_tick = 0;
 int16 xyz_array[492];
 /*int16 y_array[165];
 int16 z_array[165];*/
@@ -180,22 +181,29 @@ PRSEV_HANDLER_DEF(E_STATE_APP_WAIT_TX, tsEvent *pEv, teEvent eEvent, uint32 u32e
 			int16 ex_y = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
 			int16 ex_z = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] >= 0 ? sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] : -sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];*/
 
-			if(sqrt((double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]) > 94.4){
+			//加速度の3軸２乗合計の平方根の値を閾値と比較します
+			if(sqrt((double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]) > 92.5){
 				/*xyz_array[3*throughCount] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X];
 				xyz_array[3*throughCount+1] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y];
 				xyz_array[3*throughCount+2] = sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z];*/
 				//double xyz = sqrt((double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y] + (double)sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z] * sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]);
 
-				throughCount++;
-				thre = FALSE;
-				S_BE_WORD(0);
-				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X]);
-				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y]);
-				S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]);
-				S_OCTET( 0xFE );
-				if(bSendMessage( au8Data, q-au8Data )){
+				//TWE-LITE2525自体が一定周期で振動し、加速度が閾値を超える現象が起きるため、一定時間内で２度閾値を越えなければ、閾値を超えたとみなさない
+				thre_tick |= u32TickCount_ms;
+				if(thre_tick - u32TickCount_ms < 50 && thre_tick - u32TickCount_ms >0){
+					throughCount++;
+					thre = FALSE;
+					S_BE_WORD(0);
+					S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_X]);
+					S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Y]);
+					S_BE_WORD(sObjADXL345.ai16Result[ADXL345_LOWENERGY_IDX_Z]);
+					S_OCTET( 0xFE );
+					if(bSendMessage( au8Data, q-au8Data )){
+					}else{
+						ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
+					}
 				}else{
-					ToCoNet_Event_SetState(pEv, E_STATE_APP_SLEEP); // 送信失敗
+					thre_tick = u32TickCount_ms;
 				}
 			}
 		}else if(throughCount > 300){
