@@ -1,24 +1,21 @@
 package com.example.student.pbl;
 
 import android.app.Activity;
-import android.os.Bundle;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint.Align;
 import android.hardware.usb.UsbManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Arrays;
-import java.util.Timer;
-import java.util.TimerTask;
-import android.graphics.Color;
-import android.graphics.Paint.Align;
-import android.view.ViewGroup.LayoutParams;
 import org.achartengine.ChartFactory;
 import org.achartengine.GraphicalView;
 import org.achartengine.chart.PointStyle;
@@ -26,7 +23,11 @@ import org.achartengine.model.XYMultipleSeriesDataset;
 import org.achartengine.model.XYSeries;
 import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
+
 import java.io.BufferedWriter;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import jp.ksksue.driver.serial.FTDriver;
 
 public class TestActivity extends Activity {
@@ -318,6 +319,8 @@ public class TestActivity extends Activity {
         new Thread(mLoop).start();
     }
 
+
+
     private Runnable mLoop = new Runnable() {
         @Override
         public void run() {
@@ -427,12 +430,15 @@ public class TestActivity extends Activity {
                                  for (i = 0; i < len; ++i) {
                                      if (a > -10000 && a < 10000) {
                                          mText1 = String.format("%.2f", g_str1);
+
                                      }
                                      if (b > -10000 && b < 10000) {
                                          mText2 = String.format("%.2f", g_str2);
+
                                      }
                                      if (c > -10000 && c < 10000) {
                                          mText3 = String.format("%.2f", g_str3);
+
                                      }
 
                                  }
