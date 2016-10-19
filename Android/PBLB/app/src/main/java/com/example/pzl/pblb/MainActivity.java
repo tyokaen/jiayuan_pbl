@@ -28,9 +28,12 @@ public class MainActivity extends Activity {
     TextView ck_text,ck11,ck22,ck33,ck44;
     private EditText FileName;
     double x,y,y2,y3;
+    int count=0;
+    boolean flag=false;
     CheckBox checkBox1,checkBox2,checkBox3,checkBox4;
     FTDriver mSerial;
     final int mOutputType = 0;
+    int i = 0;
     Handler mHandler = new Handler();
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
     private String mText1,mText2,mText3,getcount,getmY,getmY2,getmY3,AmY,AmY2,AmY3;
@@ -89,7 +92,7 @@ public class MainActivity extends Activity {
         //測定開始ボタンの処理
         start.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                myHandler.postDelayed(myTask, 100);
+                //myHandler.postDelayed(myTask, 100);
                 //myHandler3.postDelayed(myTask3, 100);
                 mStop = false;
                 if (mSerial.begin(SERIAL_BAUDRATE)) {
@@ -103,7 +106,7 @@ public class MainActivity extends Activity {
         //測定開始ボタンの処理
         stop.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                cancelTimer();
+                //cancelTimer();
                 mStop = true;
                 stop.setEnabled(false);
                 start.setEnabled(true);
@@ -117,13 +120,13 @@ public class MainActivity extends Activity {
             }
         });
     }
-
+/*
     private void cancelTimer() {
         if (myHandler != null) {
             myHandler.removeCallbacks(myTask);
         }
     }
-
+*/
 
     private void mainloop() {
         mRunningMainLoop = true;
@@ -145,16 +148,23 @@ public class MainActivity extends Activity {
                     if(len!=-1) {
                         String[] new_str1 = str1.split(",", 0);
                         int youso = new_str1.length;
-                        if(youso>2){
-                            save("data", str1);
-                        }else if(youso==2){
-                            save("data", "1");
-                            //String seizon = "生存信号を受信した";
-                            //ck11.setText(seizon);
-                        }else{
-                            save("data", "2");
-                            //String denti = "電池切れ";
-                            //ck22.setText(denti);
+                        if(flag==false) {
+                            if (youso > 2) {
+                                flag=true;
+                                save("data", str1);
+                                mHandler.postDelayed(runnable,1000);
+                            } else if (youso == 2) {
+                                save("data", "1");
+                                //String seizon = "惗懚怣崋傪庴怣偟偨";
+                                //ck11.setText(seizon);
+                            } else {
+                                save("data", "2");
+                                //String denti = "揹抮愗傟";
+                                //ck22.setText(denti);
+                            }
+                        }
+                        else{
+                            save2("data",str1);
                         }
                     }
 
@@ -168,11 +178,43 @@ public class MainActivity extends Activity {
             }
 
     };
+
+    public Runnable runnable=new Runnable() {
+        public void run() {
+            mHandler.postDelayed(runnable,1000);
+            if(i==4){
+                flag=false;
+                i=0;
+                mHandler.removeCallbacks(runnable);
+
+            }
+            i++;
+
+        }
+    };
+
     public void save(String filename,String message)
     {
         try {
             //ck33.setText("3 is done");
             FileOutputStream outStream=openFileOutput(filename,MODE_PRIVATE);
+            byte[] b=message.getBytes();
+            outStream.write(b);
+            outStream.close();
+            //Toast.makeText(MainActivity.this,"Saved", Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            return;
+        }
+        catch (IOException e){
+            return ;
+        }
+    }
+
+    public void save2(String filename,String message)
+    {
+        try {
+            //ck33.setText("3 is done");
+            FileOutputStream outStream=openFileOutput(filename,MODE_APPEND);
             byte[] b=message.getBytes();
             outStream.write(b);
             outStream.close();
