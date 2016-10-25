@@ -25,26 +25,26 @@ import jp.ksksue.driver.serial.FTDriver;
 
 
 public class MainActivity extends Activity {
-    TextView ck_text,ck11,ck22,ck33,ck44;
+    TextView ck_text, ck11, ck22, ck33, ck44;
     private EditText FileName;
-    double x,y,y2,y3;
-    int count=0;
-    boolean flag=false;
-    CheckBox checkBox1,checkBox2,checkBox3,checkBox4;
+    double x, y, y2, y3;
+    int count = 0;
+    boolean flag = false;
+    CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
     FTDriver mSerial;
     final int mOutputType = 0;
     int i = 0;
     Handler mHandler = new Handler();
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
-    private String mText1,mText2,mText3,getcount,getmY,getmY2,getmY3,AmY,AmY2,AmY3;
+    private String mText1, mText2, mText3, getcount, getmY, getmY2, getmY3, AmY, AmY2, AmY3;
     private boolean mStop = false;
     private static final String ACTION_USB_PERMISSION =
             "jp.ksksue.tutorial.USB_PERMISSION";
     private boolean mRunningMainLoop;
     //public int currentTime;
-    private Handler myHandler,pHandler,myHandler2;
-    private Runnable myTask,pTask,myTask2;
-    Button start,stop,check;
+    private Handler myHandler, pHandler, myHandler2;
+    private Runnable myTask, pTask, myTask2;
+    Button start, stop, check;
     private BufferedWriter bw;
     private LinearLayout mainLayout;
 
@@ -81,13 +81,13 @@ public class MainActivity extends Activity {
 
         myHandler2 = new Handler();
 
-        start =(Button)findViewById(R.id.button1);
-        stop =(Button)findViewById(R.id.button2);
-        check =(Button)findViewById(R.id.button3);
+        start = (Button) findViewById(R.id.button1);
+        stop = (Button) findViewById(R.id.button2);
+        check = (Button) findViewById(R.id.button3);
 
-        ck_text = (TextView)findViewById(R.id.checktext);
-        ck11 = (TextView)findViewById(R.id.ck1);
-        ck22 = (TextView)findViewById(R.id.ck2);
+        ck_text = (TextView) findViewById(R.id.checktext);
+        ck11 = (TextView) findViewById(R.id.ck1);
+        ck22 = (TextView) findViewById(R.id.ck2);
 
         //測定開始ボタンの処理
         start.setOnClickListener(new View.OnClickListener() {
@@ -114,8 +114,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        check.setOnClickListener(new View.OnClickListener(){
-            public void onClick(View v){
+        check.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
                 readFileData("data");
             }
         });
@@ -136,36 +136,32 @@ public class MainActivity extends Activity {
     private Runnable mLoop = new Runnable() {
         @Override
         public void run() {
-            // [FTDriver] Create Read Buffer
-            byte[] rbuf = new byte[4096]; // 1byte <--slow-- [Transfer Speed] --fast--> 4096 byte
+            int len = 0;
             while (true) {
-                int len=0;
-                for (;;) {
-                    // [FTDriver] Read from USB serial
+                // [FTDriver] Create Read Buffer
+                byte[] rbuf = new byte[256];
+                len = mSerial.read(rbuf);
+                String str1=new String(rbuf);
+                if (len != -1) {
+                    String[] new_str1 = str1.split(",", 0);
+                    int youso = new_str1.length;
+                    if (flag == false) {
 
-                    len = mSerial.read(rbuf);
-                    String str1 = new String(rbuf);
-                    if(len!=-1) {
-                        String[] new_str1 = str1.split(",", 0);
-                        int youso = new_str1.length;
-                        if(flag==false) {
-                            if (youso > 2) {
-                                flag=true;
-                                save("data", str1);
-                                mHandler.postDelayed(runnable,1000);
-                            } else if (youso == 2) {
-                                save("data", "1");
-                                //String seizon = "惗懚怣崋傪庴怣偟偨";
-                                //ck11.setText(seizon);
-                            } else {
-                                save("data", "2");
-                                //String denti = "揹抮愗傟";
-                                //ck22.setText(denti);
-                            }
+                        if (youso > 2) {
+                            flag = true;
+                            save3("data", rbuf);
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    flag = false;
+                                }
+                            }, 5000);
+                        }else{
+                            save("data", "生存信号");
                         }
-                        else{
-                            save2("data",str1);
-                        }
+
+                    } else {
+                        save2("data", rbuf);
                     }
 
                     if (mStop) {
@@ -174,74 +170,94 @@ public class MainActivity extends Activity {
 
                     }
                 }
+            }
+            //}
+        }
+
+        ;
+
+    };
+
+    /*
+        public Runnable runnable=new Runnable() {
+            public void run() {
+                mHandler.postDelayed(runnable,1000);
+                if(i==4){
+                    flag=false;
+                    i=0;
+                    mHandler.removeCallbacks(runnable);
+
                 }
-            }
-
-    };
-
-    public Runnable runnable=new Runnable() {
-        public void run() {
-            mHandler.postDelayed(runnable,1000);
-            if(i==4){
-                flag=false;
-                i=0;
-                mHandler.removeCallbacks(runnable);
+                i++;
 
             }
-            i++;
-
-        }
-    };
-
-    public void save(String filename,String message)
-    {
+        };
+*/
+    public void save(String filename, String message) {
         try {
             //ck33.setText("3 is done");
-            FileOutputStream outStream=openFileOutput(filename,MODE_PRIVATE);
-            byte[] b=message.getBytes();
+            FileOutputStream outStream = openFileOutput(filename, MODE_PRIVATE);
+            byte[] b = message.getBytes();
             outStream.write(b);
             outStream.close();
             //Toast.makeText(MainActivity.this,"Saved", Toast.LENGTH_LONG).show();
         } catch (FileNotFoundException e) {
             return;
-        }
-        catch (IOException e){
-            return ;
+        } catch (IOException e) {
+            return;
         }
     }
 
-    public void save2(String filename,String message)
-    {
+    public void save3(String filename, byte[] z) {
         try {
             //ck33.setText("3 is done");
-            FileOutputStream outStream=openFileOutput(filename,MODE_APPEND);
-            byte[] b=message.getBytes();
-            outStream.write(b);
+            FileOutputStream outStream = openFileOutput(filename, MODE_PRIVATE);
+            outStream.write(z);
             outStream.close();
             //Toast.makeText(MainActivity.this,"Saved", Toast.LENGTH_LONG).show();
         } catch (FileNotFoundException e) {
             return;
-        }
-        catch (IOException e){
-            return ;
+        } catch (IOException e) {
+            return;
         }
     }
 
-    public String readFileData(String fileName) {
-        String res = "";
+    public void save2(String filename, byte[] z) {
+        try {
+            //ck33.setText("3 is done");
+            FileOutputStream outStream = openFileOutput(filename, MODE_APPEND);
+            outStream.write(z);
+            outStream.close();
+            //Toast.makeText(MainActivity.this,"Saved", Toast.LENGTH_LONG).show();
+        } catch (FileNotFoundException e) {
+            return;
+        } catch (IOException e) {
+            return;
+        }
+    }
+
+    public void readFileData(String fileName) {
         try {
             //ck44.setText("4 is done");
             FileInputStream fin = openFileInput(fileName);
-            int length = fin.available();
-            byte[] buffer = new byte[length];
-            fin.read(buffer);
-            res=new String(buffer);
-            ck_text.setText(res);
+            StringBuffer fileContent = new StringBuffer("");
+            byte[] buffer = new byte[4096];
+            int n;
+            while((n = fin.read(buffer)) != -1)
+            {
+                fileContent.append(new String(buffer, "UTF-8"));
+            }
+
+            /*for (int i = 0; i < length; i++){
+                res.concat(String.format("%8s", Integer.toBinaryString(buffer[i] & 0xFF).replace(' ', '0')));
+            }*/
+
+            //res = new String(buffer);
+            ck_text.setText(fileContent);
             fin.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return res;
     }
 
 }
