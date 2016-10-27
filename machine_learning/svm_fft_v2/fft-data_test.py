@@ -165,18 +165,40 @@ while True:
         break
     elif n <= 1000:
         if t == 1:
-            training_open = open1[s:n].sum()
+            training_open1_con = open1[s:n].sum()
+            training_open2_con = open2[s:n].sum()
+            training_open3_con = open3[s:n].sum()
+            training_open4_con = open4[s:n].sum()
+            
             training_label = pd.DataFrame({'x': 0,
                                            'y': 0,
                                            'z': 0},index=['label']).T
-            training_open = pd.concat([training_open, training_label],axis=1)
+            training_open1_con = pd.concat([training_open1_con, training_label],axis=1)
+            training_open2_con = pd.concat([training_open2_con, training_label],axis=1)
+            training_open3_con = pd.concat([training_open3_con, training_label],axis=1)
+            training_open4_con = pd.concat([training_open4_con, training_label],axis=1)
+
+            
         print('{0} → {1}'.format(s,n))
         training_open1 = open1[s:n].sum()
+        training_open2 = open2[s:n].sum()
+        training_open3 = open3[s:n].sum()
+        training_open4 = open4[s:n].sum()
+
         training_label = pd.DataFrame({'x': 0,
                                            'y': 0,
                                            'z': 0},index=['label']).T
         training_open1 = pd.concat([training_open1, training_label],axis=1)
-        training_open = pd.concat([training_open, training_open1])
+        training_open2 = pd.concat([training_open2, training_label],axis=1)
+        training_open3 = pd.concat([training_open3, training_label],axis=1)
+        training_open4 = pd.concat([training_open4, training_label],axis=1)
+
+        training_open1_con = pd.concat([training_open1_con, training_open1])
+        training_open2_con = pd.concat([training_open2_con, training_open2])
+        training_open3_con = pd.concat([training_open3_con, training_open3])
+        training_open4_con = pd.concat([training_open4_con, training_open4])
+
+
         t += 1
         s = n
         n = n + 200        
@@ -186,12 +208,24 @@ while True:
             print('####### 1000~2500 ######')
         print('{0} → {1}'.format(s,n))
         training_open1 = open1[s:n].sum()
+        training_open2 = open2[s:n].sum()
+        training_open3 = open3[s:n].sum()
+        training_open4 = open4[s:n].sum()
+
         training_label = pd.DataFrame({'x': 0,
                                            'y': 0,
                                            'z': 0},index=['label']).T
         training_open1 = pd.concat([training_open1, training_label],axis=1)
-        training_open = pd.concat([training_open, training_open1])
+        training_open2 = pd.concat([training_open2, training_label],axis=1)
+        training_open3 = pd.concat([training_open3, training_label],axis=1)
+        training_open4 = pd.concat([training_open4, training_label],axis=1)
 
+        training_open1_con = pd.concat([training_open1_con, training_open1])
+        training_open2_con = pd.concat([training_open2_con, training_open2])
+        training_open3_con = pd.concat([training_open3_con, training_open3])
+        training_open4_con = pd.concat([training_open4_con, training_open4])
+
+        
         s = n
         n = n + 500
         j += 1               
@@ -201,7 +235,10 @@ while True:
         print('finish')
         break
 
-training_open.columns = ['open','label']
+training_open1_con.columns = ['open1','label']
+training_open2_con.columns = ['open2','label']
+training_open3_con.columns = ['open3','label']
+training_open4_con.columns = ['open4','label']
     
     
 
