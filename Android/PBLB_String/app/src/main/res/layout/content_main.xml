@@ -20,7 +20,6 @@
         android:text=""
         />
 
-
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,36 +44,8 @@
         android:layout_below="@+id/button2"
         android:layout_centerInParent="true"
         android:id="@+id/button3"
-        android:text="check"
+        android:text="send"
         />
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/button3"
-        android:id="@+id/checktext"
-        android:text="Data"
-        />
-</ScrollView>
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/checktext"
-        android:id="@+id/ck1"
-        android:text=""
-        />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/ck1"
-        android:id="@+id/ck2"
-        android:text=""
-        />
-
-
 
 
 </RelativeLayout>
