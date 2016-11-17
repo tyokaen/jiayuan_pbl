@@ -11,8 +11,6 @@ import android.os.Handler;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.LinearLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,10 +20,8 @@ import jp.ksksue.driver.serial.FTDriver;
 
 public class MainActivity extends Activity {
     boolean flag = false;
-    CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
+    HttpClientTask task = new HttpClientTask();
     FTDriver mSerial;
-    final int mOutputType = 0;
-    int i = 0;
     Handler mHandler = new Handler();
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
     private boolean mStop = false;
@@ -33,7 +29,6 @@ public class MainActivity extends Activity {
             "jp.ksksue.tutorial.USB_PERMISSION";
     private boolean mRunningMainLoop;
     Button start, stop;
-    private LinearLayout mainLayout;
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
@@ -63,10 +58,8 @@ public class MainActivity extends Activity {
                 ACTION_USB_PERMISSION), 0);
         mSerial.setPermissionIntent(permissionIntent);
 
-
         start = (Button) findViewById(R.id.button1);
         stop = (Button) findViewById(R.id.button2);
-
 
         //測定開始ボタンの処理
         start.setOnClickListener(new View.OnClickListener() {
@@ -116,6 +109,7 @@ public class MainActivity extends Activity {
                             mHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
+                                    task.send();
                                     flag = false;
                                 }
                             }, 5000);
@@ -137,7 +131,6 @@ public class MainActivity extends Activity {
                     if (mStop) {
                         mRunningMainLoop = false;
                         return;
-
                     }
                 }
             }
@@ -147,7 +140,7 @@ public class MainActivity extends Activity {
 
     public void saveToSDCard(String filename,byte[] ss) throws Exception{
         File file=new File(Environment.getExternalStorageDirectory(), filename);
-        FileOutputStream out=new FileOutputStream(file,false);
+        FileOutputStream out=new FileOutputStream(file,false);//true ==> mode is APPEND; false ==> mode is PRIVATE;
         out.write(ss);
         out.close();
     }
