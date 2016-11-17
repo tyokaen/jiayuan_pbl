@@ -17,6 +17,11 @@ ERROR!
 '''
 
 import cgi
+import os
+print("os.getcwd()")
+print(os.getcwd())
+print('<br>')
+
 form = cgi.FieldStorage()
 import cgitb
 cgitb.enable()
@@ -24,58 +29,81 @@ cgitb.enable()
 print("Content-Type: text/html\n")
 print('<br>')
 
-print("form['file']")
-print(form['file'])
+print("form['jiayuan']")
+print(form['jiayuan'])
 print('<br>')
 
-print("form['file'].value")
-print(form['file'].value)
+print("form['jiayuan'].value")
+print(form['jiayuan'].value)
 print('<br>')
 
-print("form['file'].name")
-print(form['file'].name)
+print("form['jiayuan'].name")
+print(form['jiayuan'].name)
 print('<br>')
 
-print("form['file'].filename")
-print(form['file'].filename)
+print("form['jiayuan'].filename")
+print(form['jiayuan'].filename)
 print('<br>')
 
-fileName = "result.txt"
+import datetime
+
+cd = "/home/orange/workspace/result/result"
+date= datetime.datetime.today()
+year = str(date.year) + "_"
+month = str(date.month)+ "_"
+day = str(date.day)+ "_"
+hour = str(date.hour)+ "h"
+minute = str(date.minute)+"m"
+second = str(date.second)+"s"
+
+num_str = year + month + day+hour+minute+second
+extension = ".csv"
+
+fileName = cd + num_str + extension
+
 
 from struct import unpack
-if 'file' in form:
+
+if 'jiayuan' in form:
 	print('has_key')
 	print('<br>')
 
-	item = form['file']
+	item = form['jiayuan']
 	print("item.file")
 	print(item.file)
 	print('<br>')
 
 	if item.file:
 		#print('before_open')
-		filePath = open(fileName, 'wb')		
+		filePath = open(fileName, 'wb')	
+			
 		#fileData = file.item.read()
-		fileData = form['file'].value
+		fileData = form['jiayuan'].value
 		print("filePath")
 		print(filePath)
 		print('<br>')
 
-		print("filePath")
+		print("fileData")
 		print(fileData)
-		print('<br>') 
-
+		print('<br>')
+		
+		if os.path.exists(fileName):
+			print("nameChange")
+			
+			
 		filePath.write(fileData)
 		#print('finish')
 		filePath.close()
 
 print('<br>')
 print("getFileName:[")
-print(fileName)
+print(form['jiayuan'].filename)
 print("]")
+
 print("-->")
+
 print("saveFileName:[")
-print(form['file'].filename)
+print(fileName)
 print("]")
 
 
