@@ -1,8 +1,10 @@
 package com.example.pzl.pblb;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
@@ -36,6 +38,7 @@ public class MainActivity extends Activity {
     final int mOutputType = 0;
     int i = 0;
     Handler mHandler = new Handler();
+    String result;
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
     private String mText1, mText2, mText3, getcount, getmY, getmY2, getmY3, AmY, AmY2, AmY3;
     private boolean mStop = false;
@@ -45,10 +48,10 @@ public class MainActivity extends Activity {
     //public int currentTime;
     private Handler myHandler, pHandler, myHandler2;
     private Runnable myTask, pTask, myTask2;
-    Button start, stop, fff;
+    Button start, stop,btn_right,btn_false;
     private BufferedWriter bw;
     private LinearLayout mainLayout;
-
+    private  TextView tx_rec;
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -84,10 +87,35 @@ public class MainActivity extends Activity {
 
         start = (Button) findViewById(R.id.button1);
         stop = (Button) findViewById(R.id.button2);
-        fff = (Button) findViewById(R.id.button3);
+        btn_right=(Button)findViewById(R.id.Right);
+        btn_false=(Button)findViewById(R.id.False);
+        tx_rec=(TextView)findViewById(R.id.Tx_Receive);
 
+       btn_right.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View view) {
+               try {
+                   saveToSDCard1("zhang.csv","True"+result);
+               } catch (Exception e) {
+                   e.printStackTrace();
+               }
+               new Thread(new Runnable() {
+                   @Override
+                   public void run() {
+                       HttpClientTask_result task=new HttpClientTask_result();
+                       task.send();
+                   }
+               }).start();
 
-        //t=(TextView)findViewById(R.id.tv);
+           }
+       });
+
+        btn_false.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Input();
+            }
+        });
 
 
 
@@ -139,7 +167,35 @@ public class MainActivity extends Activity {
         new Thread(mLoop).start();
     }
 
-
+    public void Input() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("正しい振動入力");
+        final EditText editText = new EditText(this);
+        builder.setView(editText);
+        builder.setPositiveButton("送信", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i) {
+                try {
+                    saveToSDCard1("zhang.csv",editText.getText().toString()+result);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        HttpClientTask_result task=new HttpClientTask_result();
+                        task.send();
+                    }
+                }).start();
+            }
+        });
+        builder.setCancelable(false);
+        builder.setNegativeButton("キャンセル", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialogInterface, int i) {
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 
     private Runnable mLoop = new Runnable() {
         @Override
@@ -159,22 +215,21 @@ public class MainActivity extends Activity {
                             flag = true;
                             try {
                                 saveToSDCard("pbl_orange.csv", rbuf);
-                                HttpClientTask task=new HttpClientTask();
+                                HttpClientTask task=new HttpClientTask(tx_rec);
                                 task.execute();
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
 
+
                             mHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //task.execute();
                                     flag = false;
                                 }
-                            }, 5100);
+                            }, 5000);
                         }else{
                             try {
-                                //saveToSDCard1("pbl_orange.csv", "alive");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -195,28 +250,9 @@ public class MainActivity extends Activity {
                     }
                 }
             }
-            //}
         }
-
-        ;
-
     };
 
-    /*
-        public Runnable runnable=new Runnable() {
-            public void run() {
-                mHandler.postDelayed(runnable,1000);
-                if(i==4){
-                    flag=false;
-                    i=0;
-                    mHandler.removeCallbacks(runnable);
-
-                }
-                i++;
-
-            }
-        };
-*/
     public void saveToSDCard(String filename,byte[] ss) throws Exception{
         File file=new File(Environment.getExternalStorageDirectory(), filename);
         FileOutputStream out=new FileOutputStream(file,false);//true ==> mode is APPEND; false ==> mode is PRIVATE;
@@ -237,6 +273,5 @@ public class MainActivity extends Activity {
         out.write(ss.getBytes());
         out.close();
     }
-
 
 }

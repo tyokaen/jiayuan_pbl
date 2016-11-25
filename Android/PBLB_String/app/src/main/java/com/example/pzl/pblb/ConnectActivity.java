@@ -16,7 +16,7 @@ import jp.ksksue.driver.serial.FTDriver;
 
 public class ConnectActivity extends Activity {
 
-    Button mRC,btnBegin,btnEnd;
+    Button mRC,btnBegin,btnEnd,btn_app;
     FTDriver mSerial;
     private TextView mText;
 
@@ -38,7 +38,6 @@ public class ConnectActivity extends Activity {
 
         mRC.setEnabled(false);
         btnEnd.setEnabled(false);
-
         mSerial = new FTDriver((UsbManager)getSystemService(Context.USB_SERVICE));
 
         PendingIntent permissionIntent = PendingIntent.getBroadcast(this, 0, new Intent(
@@ -60,7 +59,6 @@ public class ConnectActivity extends Activity {
             mRC.setEnabled(true);
             btnEnd.setEnabled(true);
             btnBegin.setEnabled(false);
-
 
 
             mText.setText("接続中");

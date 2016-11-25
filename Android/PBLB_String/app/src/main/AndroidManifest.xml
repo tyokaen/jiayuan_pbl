@@ -32,7 +32,8 @@
         <activity
             android:name=".HttpClientTask"
             android:label="@string/title_activity_http_client_task"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".HttpClientTask_result"></activity>
     </application>
 
 </manifest>
