@@ -17,6 +17,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by jiayuan on 2016/10/26.
@@ -26,7 +28,7 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
     private Activity mParentActivity;
     private ProgressDialog mDialog = null;
     HttpClient httpClient;
-    private String mUri = "http://130.158.80.39:8080/cgi-bin/form.py";
+    private String mUri = "http://130.158.80.39:8080/cgi-bin/form2.py";
 /*
     public HttpClientTask( TextView textView){
         this.mTextView = textView;
@@ -50,6 +52,8 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
     protected void send(){
         httpClient=new DefaultHttpClient();
         HttpPost post=new HttpPost(mUri);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
+        String namenew = df.format(new Date())+".csv";
         // try {
         //  post.setURI(new URI(mUri));
         // } catch (URISyntaxException e) {
@@ -59,7 +63,9 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
         MultipartEntity multipartEntity=new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
         File sdCardDir = Environment.getExternalStorageDirectory();
         File file=new File(sdCardDir,"pbl_orange.csv");
-        FileBody body=new FileBody(file);
+        File file1 = new File(sdCardDir,namenew);
+        file.renameTo(file1);
+        FileBody body=new FileBody(file1);
         //System.out.println(body.getFilename());
         multipartEntity.addPart("jiayuan", body);
         post.setEntity(multipartEntity);
@@ -67,6 +73,16 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
             httpClient.execute(post,responseHandler);
         } catch (IOException e) {
             e.printStackTrace();
+        }
+        if (file.exists()){
+            if(file.isFile()){
+                file.delete();
+            }
+        }
+        if (file1.exists()){
+            if(file1.isFile()){
+                file1.delete();
+            }
         }
 
     }
