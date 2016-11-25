@@ -51,5 +51,4 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/btnBegin"
         android:text="測定画面" />
-
 </RelativeLayout>
