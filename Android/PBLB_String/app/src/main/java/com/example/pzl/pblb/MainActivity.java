@@ -165,16 +165,15 @@ public class MainActivity extends Activity {
                                 e.printStackTrace();
                             }
 
+
                             mHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    //task.execute();
                                     flag = false;
                                 }
-                            }, 5100);
+                            }, 5000);
                         }else{
                             try {
-                                //saveToSDCard1("pbl_orange.csv", "alive");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -195,28 +194,9 @@ public class MainActivity extends Activity {
                     }
                 }
             }
-            //}
         }
-
-        ;
-
     };
 
-    /*
-        public Runnable runnable=new Runnable() {
-            public void run() {
-                mHandler.postDelayed(runnable,1000);
-                if(i==4){
-                    flag=false;
-                    i=0;
-                    mHandler.removeCallbacks(runnable);
-
-                }
-                i++;
-
-            }
-        };
-*/
     public void saveToSDCard(String filename,byte[] ss) throws Exception{
         File file=new File(Environment.getExternalStorageDirectory(), filename);
         FileOutputStream out=new FileOutputStream(file,false);//true ==> mode is APPEND; false ==> mode is PRIVATE;
