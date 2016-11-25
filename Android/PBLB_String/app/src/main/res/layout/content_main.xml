@@ -37,15 +37,31 @@
         android:id="@+id/button2"
         android:text="stop"
         />
-
-    <Button
-        android:layout_width="wrap_content"
+    <TextView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/Tx_Receive"
+        android:text="分類の結果:"
         android:layout_below="@+id/button2"
-        android:layout_centerInParent="true"
-        android:id="@+id/button3"
-        android:text="send"
+        android:layout_marginTop="30dp"
+        android:textSize="35dp"
+       />
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/Right"
+        android:layout_below="@+id/Tx_Receive"
+        android:text="正解"
+        android:textSize="20dp"
+       />
+    <Button
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:id="@+id/False"
+        android:layout_below="@+id/Tx_Receive"
+        android:text="正解じゃない"
+        android:textSize="20dp"
+        android:layout_toRightOf="@+id/Right"
+        android:layout_alignBottom="@+id/Right"
         />
-
-
 </RelativeLayout>
