@@ -1,6 +1,5 @@
-package com.example.pzl.pblb;
+package com.example.pzl.pblb_saisin;
 
-import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -8,8 +7,8 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -20,8 +19,7 @@ import java.io.FileOutputStream;
 
 import jp.ksksue.driver.serial.FTDriver;
 
-
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
     TextView ck_text, ck11, ck22, ck33, ck44,t;
 
 
@@ -62,8 +60,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // タイトルを非表示にします。
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
 
         //currentTime = 0;
