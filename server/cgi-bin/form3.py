@@ -546,6 +546,15 @@ if 'jiayuan' in form:
                 acc_list[i%3].append(signal[i])
 
     f.close()
+
+    ACC_THRESHOLD = 900
+
+    for i in acc_list:
+        #sys.exit(str(len(i)))
+        if len(i) <= ACC_THRESHOLD:
+            sys.exit("acc_list <= " + str(ACC_THRESHOLD))
+
+
     dec = 0
     for i in range(3):
         for j in range(len(acc_list[i])):
