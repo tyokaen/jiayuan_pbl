@@ -27,7 +27,7 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
     private Activity mParentActivity;
     private ProgressDialog mDialog = null;
     HttpClient httpClient;
-    private String mUri = "http://130.158.80.39:8080/cgi-bin/form2.py";
+    private String mUri = "http://210.129.63.215:8080/cgi-bin/form3.py";
 
     protected void onPreExecute(){}
     protected String doInBackground(Void...arg0){
@@ -47,7 +47,6 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
         httpClient=new DefaultHttpClient();
         HttpPost post=new HttpPost(mUri);
 
-
         ResponseHandler<String> responseHandler=new BasicResponseHandler();
         MultipartEntity multipartEntity=new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
         File sdCardDir = Environment.getExternalStorageDirectory();
@@ -57,7 +56,7 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
         multipartEntity.addPart("jiayuan", body);
         post.setEntity(multipartEntity);
         try {
-            httpClient.execute(post,responseHandler);
+            httpClient.execute(post);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -68,18 +67,24 @@ public class HttpClientTask extends AsyncTask<Void,Void,String> {
             }
         }
 
-
     }
 
-    public String saveToSDCard(byte[] ss) throws Exception{
+    public String getfname()throws Exception{
         SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS");
         fim = "pbl_"+df.format(new Date())+".csv";
         fim1 = fim;
-        File file=new File(Environment.getExternalStorageDirectory(), fim1);
-        FileOutputStream out=new FileOutputStream(file,false);//true ==> mode is APPEND; false ==> mode is PRIVATE;
+        return fim1;
+    }
+
+    public String saveToSDCard(byte[] ss) throws Exception {
+        SimpleDateFormat df = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss_SSS");
+        fim = "pbl_" + df.format(new Date()) + ".csv";
+        fim1 = fim;
+        File file = new File(Environment.getExternalStorageDirectory(), fim1);
+        FileOutputStream out = new FileOutputStream(file, false);//true ==> mode is APPEND; false ==> mode is PRIVATE;
+
         out.write(ss);
         out.close();
         return fim1;
     }
-
 }
