@@ -27,10 +27,9 @@ public class ConnectActivity extends AppCompatActivity {
 
         btnBegin = (Button) findViewById(R.id.btnBegin);
         btnEnd = (Button) findViewById(R.id.btnEnd);
-        mRC = (Button) findViewById(R.id.RC);
+        //mRC = (Button) findViewById(R.id.RC);
 
-
-        mRC.setEnabled(false);
+        //mRC.setEnabled(false);
         btnEnd.setEnabled(false);
         mSerial = new FTDriver((UsbManager) getSystemService(Context.USB_SERVICE));
 
@@ -38,33 +37,38 @@ public class ConnectActivity extends AppCompatActivity {
                 ACTION_USB_PERMISSION), 0);
         mSerial.setPermissionIntent(permissionIntent);
 
-        mRC.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(ConnectActivity.this, MainActivity.class);
-                startActivity(intent);
-            }
-        });
     }
-
-    public void onBeginClick(View view) {
+/*
+    if( new Intent().getAction().equals(Intent.ACTION_MEDIA_MOUNTED ) ||
+            new Intent().getAction().equals(Intent.ACTION_MEDIA_CHECKING)){
         // [FTDriver] Open USB Serial
-        if (mSerial.begin(FTDriver.BAUD115200)) {
+*/
+    public void onBeginClick(View view) {
 
-            mRC.setEnabled(true);
+        if(mSerial.begin(FTDriver.BAUD115200)){
+            //mRC.setEnabled(true);
             btnEnd.setEnabled(true);
             btnBegin.setEnabled(false);
-
+            Intent intent = new Intent(ConnectActivity.this, MainActivity.class);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
         }
+        /*
+        else {
+            Toast.makeText(getApplicationContext(),"受信機USBが差し込んでいない", Toast.LENGTH_SHORT).show();
+        }
+        */
+
     }
 
     public void onEndClick(View view) {
 
-        mRC.setEnabled(false);
+        //mRC.setEnabled(false);
 
         btnEnd.setEnabled(false);
         btnBegin.setEnabled(true);
         mSerial.end();
-
 
     }
 

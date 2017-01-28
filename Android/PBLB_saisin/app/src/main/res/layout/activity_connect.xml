@@ -38,7 +38,7 @@
                     <ImageView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/small" />
+                        android:src="@drawable/iconsmalla" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -104,14 +104,6 @@
                         android:text="     "
                         />
 
-                    <Button
-                        android:id="@+id/RC"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/but"
-                        android:text="測定画面"
-                        android:textSize="25dp"
-                        android:textStyle="bold" />
 
                     <TextView
                         android:layout_width="wrap_content"
