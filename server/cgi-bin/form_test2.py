@@ -9,7 +9,7 @@ html='''<html>
 <title>Form test</title>
 </head>
 <body>
-<h1>Python Form test2</h1><hr> 
+<h1>通知テスト</h1><hr> 
 <form name="Form" method="POST"enctype="multipart/form-data" action="form3.py">
 file:<input type="file" size="30" name="jiayuan">
 <input type="submit" value="send" name="button">
