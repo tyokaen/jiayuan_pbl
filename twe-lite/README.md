@@ -5,7 +5,7 @@
 インポートする方法などの環境構築やプログラミング開発方法はTWESDK付属のドキュメントに掲載されている。
 
 このTWESDK付属のドキュメント(ToCoNet_SDK_manual_20xxxx-x.pdfのようなファイル名)でカバーされていない加速度計についての技術情報は以下のPDFに掲載されている
-http://www.analog.com/media/jp/technical-documentation/data-sheets/ADXL345_jp.pdf  (*)
+(*) http://www.analog.com/media/jp/technical-documentation/data-sheets/ADXL345_jp.pdf
 このPDFの26ページ（文書自体の23ページ）から29ページ（文書自体の26ページ）と、
 https://github.com/tsukuba-pbl/16-1/blob/twesdk-src/twe-lite/twelite2525/micom/Source/ADXL345_LowEnergy.c
 の87行目から記述されている関数"bADXL345_LowEnergy_Setting"の内容を見比べることで、あらゆるパラメーターを変更することができる。
