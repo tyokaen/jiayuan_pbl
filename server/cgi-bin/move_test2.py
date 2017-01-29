@@ -12,7 +12,7 @@ html='''<html>
 </head>
 
 <body>
-<h1>Python Form test</h1><hr> 
+<h1>動画視聴テスト</h1><hr> 
 <form name="Form" method="POST" enctype="multipart/form-data" action="form6.py">
 file:<input type="file" size="30" name="jiayuan">
 <!-- name:<input type="text" size="30" name="name">-->
