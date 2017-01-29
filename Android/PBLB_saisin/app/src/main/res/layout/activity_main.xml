@@ -21,10 +21,12 @@
             android:orientation="vertical">
 
             <android.support.v7.widget.CardView
+                android:clickable="true" android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="10dp"
+                app:cardElevation="3dp"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true">
 
@@ -36,7 +38,7 @@
                     <ImageView
                         android:layout_width="50dp"
                         android:layout_height="50dp"
-                        android:src="@drawable/small" />
+                        android:src="@drawable/iconsmall" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -50,10 +52,12 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:clickable="true" android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="850dp"
                 app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="10dp"
+                app:cardElevation="3dp"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true">
 
@@ -69,12 +73,11 @@
                         />
 
                     <Button
-                        android:id="@+id/btnBegin"
-                        android:onClick="onBeginClick"
+                        android:id="@+id/button1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/but"
-                        android:text="接  続"
+                        android:text="Start"
                         android:textSize="25dp"
                         android:textStyle="bold" />
 
@@ -85,12 +88,11 @@
                         />
 
                     <Button
-                        android:id="@+id/btnEnd"
-                        android:onClick="onEndClick"
+                        android:id="@+id/button2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:background="@drawable/but"
-                        android:text="切  断"
+                        android:text="Stop"
                         android:textSize="25dp"
                         android:textStyle="bold" />
 
@@ -100,14 +102,7 @@
                         android:text="     "
                         />
 
-                    <Button
-                        android:id="@+id/RC"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/but"
-                        android:text="測定画面"
-                        android:textSize="25dp"
-                        android:textStyle="bold" />
+
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -118,7 +113,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="100dp"
                         android:layout_marginLeft="120dp"
                         android:text="Orange version : 1.0"
                         android:textColor="@android:color/darker_gray"
@@ -142,10 +136,12 @@
             android:orientation="vertical">
 
             <android.support.v7.widget.CardView
+                android:clickable="true" android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="10dp"
+                app:cardElevation="3dp"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true">
 
@@ -158,10 +154,12 @@
             </android.support.v7.widget.CardView>
 
             <android.support.v7.widget.CardView
+                android:clickable="true" android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@android:color/black"
                 app:cardCornerRadius="10dp"
+                app:cardElevation="3dp"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true">
 
@@ -203,10 +201,12 @@
 
 
             <android.support.v7.widget.CardView
+                android:clickable="true" android:foreground="?android:attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardBackgroundColor="@android:color/white"
                 app:cardCornerRadius="10dp"
+                app:cardElevation="3dp"
                 app:cardPreventCornerOverlap="true"
                 app:cardUseCompatPadding="true">
 
