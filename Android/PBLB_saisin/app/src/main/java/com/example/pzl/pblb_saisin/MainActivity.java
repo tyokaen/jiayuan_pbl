@@ -11,40 +11,29 @@ import android.os.PowerManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.TextView;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.ArrayList;
 
 import jp.ksksue.driver.serial.FTDriver;
 
 public class MainActivity extends AppCompatActivity {
-    TextView ck_text, ck11, ck22, ck33, ck44,t;
     private static String TAG = "com.example.pblb_saisin.MainActivity";
 
     MyWakefulReceiver mwr = new MyWakefulReceiver();
     private Context context;
 
     String finame;
-    private EditText FileName;
-    double x, y, y2, y3;
-    int count = 0;
     boolean flag = false;
-    CheckBox checkBox1, checkBox2, checkBox3, checkBox4;
     FTDriver mSerial;
-    final int mOutputType = 0;
-    int i = 0;
     Handler mHandler = new Handler();
     String result;
     final int SERIAL_BAUDRATE = FTDriver.BAUD115200;
-    private String mText1, mText2, mText3, getcount, getmY, getmY2, getmY3, AmY, AmY2, AmY3;
     private boolean mStop = false;
     private static final String ACTION_USB_PERMISSION =
             "jp.ksksue.tutorial.USB_PERMISSION";
     private boolean mRunningMainLoop;
-    //public int currentTime;
     private Handler myHandler, pHandler, myHandler2;
     Button start, stop;
 
@@ -117,11 +106,11 @@ public class MainActivity extends AppCompatActivity {
         mRunningMainLoop = true;
         new Thread(mLoop1).start();
     }
-
-    private Runnable mLoop = new Runnable() {
+    private Runnable mLoop1 = new Runnable() {
         @Override
         public void run() {
             int len = 0;
+            final ArrayList<byte[]> p = new ArrayList<>();
             while (true) {
                 // [FTDriver] Create Read Buffer
                 byte[] rbuf = new byte[128];
@@ -133,11 +122,13 @@ public class MainActivity extends AppCompatActivity {
                     //String[] new_str1 = str1.split(",", 0);
                     //int youso = new_str1.length;
                     if (flag == false) {
-                        if ((rbuf[0]&0xFF)!=0x00) {
+                        if ((rbuf[0]&0xFF)==0x81) {
+                            //i=i+1;
                             flag = true;
                             try {
+                                p.add(rbuf);
                                 HttpClientTask task=new HttpClientTask();
-                                finame = task.saveToSDCard(rbuf);
+                                finame = task.getfname();
                                 task.execute();
 
                             } catch (Exception e) {
@@ -148,91 +139,23 @@ public class MainActivity extends AppCompatActivity {
                                 public void run() {
                                     flag = false;
                                     try {
+                                        saveToSDCard3(finame,p);
+                                        p.clear();
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
                                 }
                             }, 5000);
-                        }else{
-                            try {
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
                         }
                     } else {
-                            //if(youso>2){
-                                try{
-                                    saveToSDCard2(finame,rbuf);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
+                        //i=i+1;
+                        p.add(rbuf);
                     }
                     if (mStop) {
                         mRunningMainLoop = false;
                         return;
                     }
-                }
-            }
 
-    };
-
-    private Runnable mLoop1 = new Runnable() {
-        @Override
-        public void run() {
-            int len = 0;
-            while (true) {
-                // [FTDriver] Create Read Buffer
-                byte[] rbuf = new byte[128];
-
-                len = mSerial.read(rbuf);
-                String str1=new String(rbuf);
-
-                if(len!=0) {
-                    String[] new_str1 = str1.split(",", 0);
-                    int youso = new_str1.length;
-                    if (flag == false) {
-                        if (youso != 2) {
-                            flag = true;
-                            try {
-                                HttpClientTask task=new HttpClientTask();
-                                finame = task.saveToSDCard(rbuf);
-                                task.execute();
-
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            mHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    flag = false;
-                                    try {
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }, 5000);
-                        }else{
-                            try {
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    } else {
-                        if(youso!=2){
-                            try{
-                                saveToSDCard2(finame,rbuf);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
-
-                    }
-                    if (mStop) {
-                        mRunningMainLoop = false;
-                        return;
-                    }
                 }
             }
         }
@@ -246,33 +169,13 @@ public class MainActivity extends AppCompatActivity {
         out.close();
     }
 
-    public void saveToSDCard3(String filename,byte[] ss) throws Exception{
-        File file=new File(Environment.getExternalStorageDirectory(), filename);
-        FileOutputStream out=new FileOutputStream(file,true);
-
-        out.write(ss);
-        out.close();
-    }
-
-/*
-    public void saveToSDCard_list(String filename,ArrayList ss) throws Exception{
-        File file=new File(Environment.getExternalStorageDirectory(), filename);
-        FileOutputStream out=new FileOutputStream(file,true);//true ==> mode is APPEND; false ==> mode is PRIVATE;
-        for(int m  =0; m < ss.size();m++)
-        {
-            out.write((byte[])ss.get(m));
+    public void saveToSDCard3(String filename, ArrayList<byte[]> ss) throws Exception {
+        File file = new File(Environment.getExternalStorageDirectory(), filename);
+        FileOutputStream out = new FileOutputStream(file, true);
+        for(int q=0;q<ss.size();q++){
+            out.write(ss.get(q));
         }
         out.close();
     }
-*/
-/*
-    int j=0;
-    byte[] rb = new byte[rbuf.length];
-    for(int i=0;i<rbuf.length;i++) {
-        if(rbuf[i] != 0x00){
-            rb[j] = rbuf[i];
-            j=j+1;
-        }
-    }
-*/
+
 }
