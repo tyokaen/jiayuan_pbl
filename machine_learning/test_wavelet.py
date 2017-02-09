@@ -1,69 +1,76 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Feb  4 09:51:32 2017
+振動データ一定サイズ(WAVE_NUM)のウェーブレットデータ変換するプログラム
+@author: student
+"""
+
 import pywt
-import random
 import csv
 import os
+import re
+import shutil
 
+target = r'^-?[0-9]{1,3}'
+r = re.compile(target)
 
-dir_name = ['open', 'dondon']
-dir_i = 1
-dir_path = 'C:\\Users\\NakagawaMasafumi\\Documents\\data\\'+dir_name[dir_i]+'\\'
-out_dir_path = 'C:\\Users\\NakagawaMasafumi\\Documents\\data\\'+dir_name[dir_i]+'_wavelet\\'
+dir_name = ['02-01＿door-open_csv_afterlinear','02-01_clatter_csv_afterlinear']
+
+dir_i = 0
+#dir_i = 1
+dir_path = 'C:\\Users\\student\\Documents\\data\\'+dir_name[dir_i]+'\\'
+out_dir_path = 'C:\\Users\\student\\Documents\\data\\'+dir_name[dir_i]+'_wavelet\\'
 files = os.listdir(dir_path)
 
+
+if os.path.exists(out_dir_path) is False:
+    os.makedirs(out_dir_path)
+    print("make dir")
+else:
+    shutil.rmtree(out_dir_path)
+    print("delete dir")
+    os.makedirs(out_dir_path)
+    print("make dir")
+    
+
+
 for file in files:
-    for fi in range(0,36):
-        f = open(dir_path+file, 'r')
+    f = open(dir_path + file, 'r')
+    w = open(out_dir_path+file, 'a')
+    
+    csvWriter = csv.writer(w)
+    data = list(f)
+    data_list = []
+    acc_list = [[],[],[]]
 
-        acc_list = [[], [], []]
-        pos = random.randint(0,175000)
-        index = 0
-        for line in f:
-            if index >= pos + 5000:
+    for d in data:
+#        print(d.split(","))
+        data_list.append(d.split(","))
+    
+    for i,d in enumerate(data_list):
+#        print("index:{}".format(i))
+        for value in d:
+#            print("value:{}".format(value))
+            match = r.search(value)
+            if match is None:
+                print("oh my god")
+            else:
+#                print(match.group())
+                acc_list[i].append(match.group())
+            
+    WAVE_NUM = 10 #特徴量数を決める
+    for i in range(0,3):
+        coeffs = pywt.wavedec(acc_list[i], 'db1', level=7)
+#        print("coeffs_len:{}".format(len(coeffs[0])))
+        if len(coeffs[0]) >= WAVE_NUM:
+            csvWriter.writerow(coeffs[0][0:WAVE_NUM])
+        else:
+            if os.path.exists(out_dir_path+file):
+                w.close()
+                os.remove(out_dir_path+file)
                 break
-            if index >= pos:
-                #print (line)
-                values = line.strip().split(',')
-                acc_list[0].append(int(values[1]))
-                acc_list[1].append(int(values[2]))
-                acc_list[2].append(int(values[3]))
 
-            index = index + 1
+    f.close()
+    w.close()
 
-        f.close()
 
-        #print(acc_list)
-        f = open(out_dir_path+file[0:len(dir_name[dir_i])+1]+'_'+str(fi)+'.csv', 'w')
-        csvWriter = csv.writer(f)
-        for i in range(0,3):
-            coeffs = pywt.wavedec(acc_list[i], 'db1', level=10)
-            csvWriter.writerow(coeffs[0])
-
-        f.close()
-
-"""f = open(dir_path+'dondon1.csv', 'r')
-
-acc_list = [[], [], []]
-pos = 0#random.randint(0,175000)
-index = 0
-for line in f:
-    if index >= pos + 10:
-        break
-    if index >= pos:
-        #print (line)
-        values = line.strip().split(',')
-        acc_list[0].append(int(values[1]))
-        acc_list[1].append(int(values[2]))
-        acc_list[2].append(int(values[3]))
-
-    index = index + 1
-
-f.close()"""
-
-#coeffs = pywt.wavedec([5,6,11,12,8,9], 'db1', level=1)
-#print(coeffs[0])
-#cA2, cD5, cD4, cD3, cD2, cD1 = coeffs
-#print (cA2)
-#[ 2.12132034  4.94974747  7.77817459]
-#print (cD1)
-#[-0.70710678 -0.70710678 -0.70710678]
-#print (cD5)
