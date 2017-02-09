@@ -14,7 +14,9 @@ from scipy.fftpack import fft,fftfreq
 import matplotlib.pyplot as plt
 
 
-
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの保存先を指定--start
+#--------------------------------------------------------------------------------------------#
 #dir_name = ['open_12_18_csv_linear','clatter_12_18_csv_linear']
 #dir_name = ['open_12_18_csv_beforelinear','clatter_12_18_csv_beforelinear']
 #dir_name = ['open_12_18_csv_afterlinear','clatter_12_18_csv_afterlinear']
@@ -23,14 +25,24 @@ import matplotlib.pyplot as plt
 #dir_name = ['sku445-753_finger_afterlinear','sku469-657_finger_afterlinear']
 #dir_name = ['sku186-580_afterlinear','sku445-753_afterlinear','sku469-657_afterlinear']
 #dir_name = ['sku186-580_beforelinear','sku445-753_beforelinear','sku469-657_beforelinear']
-dir_name = ['ballpen_afterlinear','marker_afterlinear','sharppen_afterlinear']
+#dir_name = ['ballpen_afterlinear','marker_afterlinear','sharppen_afterlinear']
+dir_name = ['pen_csv_afterlinear2','tile_csv_afterlinear2']
+#dir_name = ['02-01＿door-open','02-01_clatter']
 
 
-#dir_i = 0
+dir_i = 0
 #dir_i = 1
-dir_i = 2
-file_i = dir_i
+#dir_i = 2
+#file_i = dir_i
 
+dir_path = 'C:\\Users\\student\\Documents\\data\\'+dir_name[dir_i]+'\\'
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの保存先を指定--end
+#--------------------------------------------------------------------------------------------#
+
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの出力先を指定--start
+#--------------------------------------------------------------------------------------------#
 #dir_path = 'C:\\Users\\student\\Documents\\data\\'+dir_name[dir_i]+'\\'
 #out_dir_path = 'C:\\Users\\student\\Documents\\data\\'+dir_name[dir_i]+'_fft\\'
 
@@ -40,9 +52,11 @@ file_i = dir_i
 #dir_path = 'C:\\Users\\student\\Documents\\data\\haptics_finger_csv\\'+dir_name[dir_i]+'\\'
 #out_dir_path = 'C:\\Users\\student\\Documents\\data\\haptics_finger_csv\\'+dir_name[dir_i]+'_fft\\'
 
-dir_path = 'C:\\Users\\student\\Documents\\data\\haptics3_csv\\'+dir_name[dir_i]+'\\'
-out_dir_path = 'C:\\Users\\student\\Documents\\data\\haptics3_csv\\'+dir_name[dir_i]+'_fft\\'
+out_dir_path = 'C:\\Users\\student\\Documents\\data\\'+dir_name[dir_i]+'_fft2\\'
 
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの出力先を指定--end
+#--------------------------------------------------------------------------------------------#
 
 files = os.listdir(dir_path)
 
@@ -50,9 +64,12 @@ if os.path.exists(out_dir_path) is False:
     os.makedirs(out_dir_path)
     print("make dir")
 
-
+#count = 0
 for file in files:
     print("file:{}".format(file))
+#    if count > 0:
+#        break
+#    count+=1
 
     data = pd.read_csv(dir_path+file,header=None)
 
@@ -86,7 +103,7 @@ for file in files:
 #                                   fft
 ################################################################################
 
-#    fs = 1000 # Sampling rate
+#    fs = 334 # Sampling rate
     L = len(acc_list[0]) # Signal length
     
     # 窓関数
@@ -116,29 +133,29 @@ for file in files:
 
 
 #    # 横軸周波数
-#    fs = 400
-#    freqList = fftfreq(L , 1/fs)
+    fs = 334 #5s1670, 334hz
+    freqList = fftfreq(L , 1/fs)
 #    #half_freqList = freqList[1:half_L]
-#    half_freqList = freqList[idx_start:half_L]
+    half_freqList = freqList[idx_start:half_L]
 #
 #
-#    # 図を表示
-#    fig = plt.figure(figsize=(10,8))
-#    # openのFFT値を確認
-#    fig.add_subplot(411)
-#    plt.plot(half_freqList, half_spectrum[0])
-#    plt.xlim([0,fs/2])
-##    plt.ylim([0,1024])
-#    
-#    fig.add_subplot(412)
-#    plt.plot(half_freqList, half_spectrum[1])
-#    plt.xlim([0,fs/2])
-##    plt.ylim([0,512])
-#    
-#    fig.add_subplot(413)
-#    plt.plot(half_freqList, half_spectrum[2])
-#    plt.xlim([0,fs/2])
-##    plt.ylim([0,512])
+#    # フーリエ変換後の図を表示
+    fig = plt.figure(figsize=(10,8))
+    # openのFFT値を確認
+    fig.add_subplot(411)
+    plt.plot(half_freqList, half_spectrum[0])
+    plt.xlim([0,fs/2])
+#    plt.ylim([0,1024])
+    
+    fig.add_subplot(412)
+    plt.plot(half_freqList, half_spectrum[1])
+    plt.xlim([0,fs/2])
+#    plt.ylim([0,512])
+    
+    fig.add_subplot(413)
+    plt.plot(half_freqList, half_spectrum[2])
+    plt.xlim([0,fs/2])
+#    plt.ylim([0,512])
             
 
     
@@ -148,8 +165,14 @@ for file in files:
                          'z':half_spectrum[2]}).T
                          
     # csvファイルに書き出し
-    
+#    half_freqList = list(half_freqList)
+#    half_freqList.insert(0,"axis / hz")
+#   
+    # 保存
 #    fileName = out_dir_path + file_name[file_i] + file
     fileName = out_dir_path + file
     print(fileName)
-    data.to_csv(fileName, mode='w',header=None, index=None)      
+    data.to_csv(fileName, mode='w',header=None, index=None)
+#    data.to_csv(fileName, mode='w',index_label=half_freqList) 
+
+         
