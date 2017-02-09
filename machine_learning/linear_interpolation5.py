@@ -11,26 +11,47 @@ import re
 import os
 import pandas as pd
 import shutil
+import numpy as np
 #import numpy as np
 
 
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの保存先を指定--start
+#--------------------------------------------------------------------------------------------#
 #dir_name = ['open_12_18_csv','clatter_12_18_csv']
 #dir_name = ['ballpen','pencil']
 #dir_name = ['sku186-580','sku445-753','sku469-657']
-dir_name = ['ballpen','marker','sharppen']
+#dir_name = ['ballpen','marker','sharppen']
+#dir_name = ['door-open_01_25','clatter_01_25']
+#dir_name = ['enpitsu','t480-4888']
+#dir_name = ['pen_csv','tile_csv']
+#dir_p = ['pen','tile']
+#dir_name = ['02-01＿door-open_csv','02-01_clatter_csv']
+dir_name = ['02_05_open','02_05_clatter']
 
-#dir_i = 0
+dir_i = 0
 #dir_i = 1
-dir_i = 2
+#dir_i = 2
 
 #dir_path = r'/Users/student/Documents/data/haptics_finger_csv/'+dir_name[dir_i]+'/'
+#dir_path = r'/Users/student/Documents/data/'+dir_name[dir_i]+'/'
+#dir_path = r'/Users/student/Documents/data/haptics3_csv/'+dir_name[dir_i]+'/'
+dir_path = r'/Users/student/Documents/data/'+dir_name[dir_i]+'_csv/'
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの保存先を指定--end
+#--------------------------------------------------------------------------------------------#
+
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの出力先を指定--start
+#--------------------------------------------------------------------------------------------#
 #out_dir_path = r'/Users/student/Documents/data/haptics_finger_csv/'+dir_name[dir_i]+'_beforelinear/'
 #out_dir_path = r'/Users/student/Documents/data/haptics3_csv/'+dir_name[dir_i]+'_beforelinear/'
-
-#dir_path = r'/Users/student/Documents/data/'+dir_name[dir_i]+'/'
-dir_path = r'/Users/student/Documents/data/haptics3_csv/'+dir_name[dir_i]+'/'
 #out_dir_path = r'/Users/student/Documents/data/'+dir_name[dir_i]+'_beforelinear/'
-out_dir_path = r'/Users/student/Documents/data/haptics3_csv/'+dir_name[dir_i]+'_afterlinear/'
+#out_dir_path = r'/Users/student/Documents/data/'+dir_name[dir_i]+'_afterlinear2/'
+out_dir_path = r'/Users/student/Documents/data/'+dir_name[dir_i]+'_afterlinear/'
+#--------------------------------------------------------------------------------------------#
+                                    # 振動データの出力先を指定--end
+#--------------------------------------------------------------------------------------------#
 
 
 files = os.listdir(dir_path) # get all files
@@ -38,6 +59,8 @@ files = os.listdir(dir_path) # get all files
 #print("file:{}".format(file))
 
 
+# 出力先のディレクトリが存在しない場合生成
+# 出力先のディレクトリが存在する場合削除して、初期化する
 if os.path.isdir(out_dir_path) is False:
     os.makedirs(out_dir_path)
     print("make dir")
@@ -123,14 +146,14 @@ def linear(arg,axis):
     #        print(j,x1,y1,x2,y2,a,b,ans)       
     #        print("num:{}".format(i+(j*RANGE)))
     #        print("{}-{}={}".format(i+1 + (j*(RANGE-1)),i +(j*(RANGE-1)),round(timestamps[i+1 + (j*(RANGE-1))] - timestamps[i +(j*(RANGE-1))],2)))     
-            print("{}-{}={}".format(i+1 + (j*(RANGE-1)),i +(j*(RANGE-1)),timestamps[i+1 + (j*(RANGE-1))] - timestamps[i +(j*(RANGE-1))]))     
+            print("{}-{}={}".format(i+1 + (j*(RANGE-1)),i +(j*(RANGE-1)),abs(timestamps[i+1 + (j*(RANGE-1))] - timestamps[i +(j*(RANGE-1))])))   
     
             tmp = timestamps[i+(j*(RANGE))] 
     #        print("tmp:{}".format(tmp))
             
                 
             # 2値の差（0~３msなら、3ms間の差があり、0ms, 1ms, 2ms）の線形補間の値をyに格納する
-            for k in range(0,timestamps[i+1 + (j*RANGE)] - timestamps[i +(j*RANGE)]):
+            for k in range(0,abs(timestamps[i+1 + (j*RANGE)] - timestamps[i +(j*RANGE)])):
     #            print(tmp,round(a*tmp + b))
                 y.append(round(a * tmp + b))
     #                print("3:{}".format(round(tmp,2)))
@@ -148,6 +171,7 @@ def linear(arg,axis):
     #print(len(data))
     #print(len(time))
     
+    # グラフを表示（1軸）
     import matplotlib.pyplot as plt
     import matplotlib as mpl
     mpl.rc('figure.subplot',left=0,hspace=0.5,wspace=0,bottom=0,top=1.0)
@@ -170,8 +194,14 @@ def linear(arg,axis):
     return (time,data)
     
 
-pattern = [r"^-?[0-9]{1,3}"]
+pattern = [r"^-?[0-9]{1,3}",r"[0-9]"]
 r = re.compile(pattern[0])
+r1 = re.compile(pattern[1])            
+
+
+
+#a = []
+
 
 for file in files:
     print("file:{}".format(file))    
@@ -180,6 +210,7 @@ for file in files:
 
     acc_list = [[], [], []] # acc_list[[x],[y],[z]] all data
     timestamps = [] # timestamps[time[ms]] all data 
+    change_id = []
 
     for line in f:
         tmp_acc_list = [[],[],[]] # tmp_acc_list = [[x],[y],[z]] 1 row data
@@ -188,7 +219,20 @@ for file in files:
         signal = str(line).replace(r'\x00', "").split(',') #signal= [id,timestamps,status,x,y,z,...,x,y,z] length=33 
         print(len(signal))
         
-        if signal[0] == 'b\'"b\\\'[810f0413' and len(signal) > 2: # ID check   
+#        if signal[0] == 'b\'[81022e10' and len(signal) > 2: # ID check  
+        match1 = r1.search(signal[0])
+        if not match1 is None:
+            m_id = signal[0][match1.start():]
+#            print()
+        else:
+            m_id = 0
+        
+#        print("micon_idを右の値に変更:{}".format(signal[0]))
+        change_id.append(signal[0])
+#        if signal[0] == "b\'\"b\\\'[810f0413" and len(signal) > 2: # ID check
+#        if signal[0] == "b\'[81022e10" and len(signal) > 2: # ID check  
+        if signal[0] == "b\'[810f07c1" and len(signal) > 2: # ID check  
+        
     #        print(len(signal))
     #        print(signal)
 
@@ -198,11 +242,17 @@ for file in files:
 #                print("yeah")
 #                continue
 
-            pattern1 = [r"[a-z]"]
+            pattern1 = [r"[0-9]{1,7}"]
+            pattern2 = [r"[a-z]"]
+
             r1 = re.compile(pattern1[0])
+            r2 = re.compile(pattern2[0],re.IGNORECASE)
+
             match1 = r1.search(signal[1])
+            match2 = r2.search(signal[1])
+
             
-            if match1 is None: 
+            if not match1 is None and match2 is None: 
                 timestamp = int(signal[1])
             else:
                 continue
@@ -235,6 +285,7 @@ for file in files:
                     delete_idx = decideDelete(i,delete_idx,signal)
                 
             if len(delete_idx) != 0: # is delete_idx
+                delete_idx = np.unique(delete_idx)
                 del_idx = list(delete_idx)
                 del_idx.sort(reverse=True)
                 deleteProcessing(del_idx,tmp_acc_list,tmp_timestamps)            
@@ -257,14 +308,22 @@ for file in files:
     
     t,x_data = linear(0,"x")
     t,y_data = linear(1,"y")
+#    t = []
     t,z_data = linear(2,"z")
-    
+#    t.insert(0,"")
+#    print(len(t),len(x_data))
+#    a.append(len(t))
+#    a.append(len(x_data))
     
     datas[0].append(x_data)
     datas[1].append(y_data)
     datas[2].append(z_data)
     
-    
+
+#--------------------------------------------------------------------------------------------#
+                                # 補間前を保存 --start
+                                # 補間後の振動データを保存したい場合は、コメントアウトする
+#--------------------------------------------------------------------------------------------#
 #    # 補間前を保存
 #    if len(x_data) > 800:  
 #        out_f = open(out_dir_path+file, 'w')         
@@ -274,16 +333,30 @@ for file in files:
 #        
 #        df.to_csv(out_f,header=None,index=None)
 #        out_f.close()
-    
+#--------------------------------------------------------------------------------------------#
+                                # 補間前を保存 --end
+#--------------------------------------------------------------------------------------------#    
+
+#--------------------------------------------------------------------------------------------#
+                                # 補間後を保存 --start
+                                # 補間前の振動データを保存したい場合は、コメントアウトする
+#--------------------------------------------------------------------------------------------#
     # 補間後を保存
     if len(x_data) > 800:  
-        out_f = open(out_dir_path+file, 'w')         
+        out_f = open(out_dir_path+file, 'w')
+        # 行名を指定 x,y,z         
         df = pd.DataFrame({"x":x_data,
                            "y":y_data,
                            "z":z_data}).T
         
         df.to_csv(out_f,header=None,index=None)
+#        df.to_csv(out_f,index_label=t) #列名(index_label)をt(補間後のタイムスタンプ)に指定
+
         out_f.close() 
+        
+#--------------------------------------------------------------------------------------------#
+                                # 補間後を保存 --end
+#--------------------------------------------------------------------------------------------#
                      
 
         
