@@ -103,7 +103,7 @@ bool_t bADXL345_LowEnergy_Setting()
 	com = 0x03;
 	bOk &= bSMBusWrite(ADXL345_ADDRESS, ADXL345_THRESH_ACT, 1, &com );
 	//	動いていないことを判断するための閾値
-	com = 0x02;
+	com = 0x03;
 	bOk &= bSMBusWrite(ADXL345_ADDRESS, ADXL345_THRESH_INACT, 1, &com );
 	//	動いていないことを判断するための時間(s)
 	com = 0x05;
